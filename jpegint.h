@@ -6,6 +6,7 @@
  * Modified 1997-2009 by Guido Vollbeding.
  * libjpeg-turbo Modifications:
  * Copyright (C) 2015, D. R. Commander
+ * Copyright (C) 2015, Google, Inc.
  * For conditions of distribution and use, see the accompanying README file.
  *
  * This file provides common declarations for the various JPEG modules.
@@ -149,6 +150,12 @@ struct jpeg_decomp_master {
 
   /* State variables made visible to other modules */
   boolean is_dummy_pass;        /* True during 1st pass for 2-pass quant */
+
+  /* Buffer large enough to store an output row.  This is used when
+   * jpeg_skip_scanlines() chooses to "skip" a row by reading it into this
+   * dummy buffer.
+   */
+  JSAMPROW dummy_row_buffer;
 };
 
 /* Input control module */

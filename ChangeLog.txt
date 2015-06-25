@@ -33,6 +33,9 @@ Clang undefined behavior sanitizers.  None of these was known to pose a
 security threat, but removing the warnings makes it easier to detect actual
 security issues, should they arise in the future.
 
+[2] Added a new libjpeg API function (jpeg_skip_scanlines()) that can be used
+to partially decode a JPEG image.  See libjpeg.txt for more details.
+
 
 1.4.1
 =====
