@@ -42,11 +42,6 @@ extern "C"
 static const int RENDER_MODE_FOR_DISPLAY = 1;
 static const int RENDER_MODE_FOR_PRINT = 2;
 
-static struct {
-    jfieldID x;
-    jfieldID y;
-} gPointClassInfo;
-
 static Mutex sLibraryLock;
 
 static int sLibraryReferenceCount = 0;
@@ -80,15 +75,6 @@ static int getBlock(void* param, unsigned long position, unsigned char* outBuffe
     return 1;
 }
 
-inline long getFileSize(int fd){
-    struct stat file_state;
-    if(fstat(fd, &file_state) >= 0){
-        return (long)(file_state.st_size);
-    }else{
-        LOGE("Error getting file size");
-        return 0;
-    }
-}
 static void DropContext(void* data) {
     delete (CRenderContext*) data;
 }
@@ -111,13 +97,11 @@ JNIEXPORT jlong JNICALL Java_tv_loilo_pdfium_PdfRenderer_nativeCreate
             case FPDF_ERR_SECURITY: {
                 ll_jniThrowException(env, "java/lang/SecurityException",
                                      "cannot create document. Error:");// %ld, error);
-                return -1;
             }
                 break;
             default: {
                 ll_jniThrowException(env, "java/io/IOException",
                                      "cannot create document. Error:");// %ld", error);
-                return -1;
             }
                 break;
         }
