@@ -129,7 +129,7 @@ JNIEXPORT jlong JNICALL Java_tv_loilo_pdfium_PdfRenderer_nativeCreate
 }
 
 JNIEXPORT jlong JNICALL Java_tv_loilo_pdfium_PdfRenderer_nativeOpenPageAndGetSize
-(JNIEnv *env, jobject thiz, jlong documentPtr, jint pageIndex, jobject outSize) {
+(JNIEnv *env, jobject thiz, jlong documentPtr, jint pageIndex, jdoubleArray outSize) {
     FPDF_DOCUMENT document = reinterpret_cast<FPDF_DOCUMENT>(documentPtr);
 
     FPDF_PAGE page = FPDF_LoadPage(document, pageIndex);
@@ -151,8 +151,10 @@ JNIEXPORT jlong JNICALL Java_tv_loilo_pdfium_PdfRenderer_nativeOpenPageAndGetSiz
         return -1;
     }
 
-    env->SetIntField(outSize, gPointClassInfo.x, width);
-    env->SetIntField(outSize, gPointClassInfo.y, height);
+    double *outPtr = env->GetDoubleArrayElements(outSize, 0);
+    outPtr[0] = width;
+    outPtr[1] = height;
+    env->ReleaseDoubleArrayElements(outSize,outPtr,0);
 
     return reinterpret_cast<jlong>(page);
 }
@@ -216,17 +218,30 @@ static void renderPageBitmap(FPDF_BITMAP bitmap, FPDF_PAGE page, int destLeft, i
         // PDF's coordinate system origin is left-bottom while
         // in graphics it is the top-left, so remap the origin.
         matrix.Set(1, 0, 0, -1, 0, pPage->GetPageHeight());
+        // SkScalar transformValues[6];
+        // transform->asAffine(transformValues);
         // matrix.Concat(transformValues[SkMatrix::kAScaleX], transformValues[SkMatrix::kASkewY],
         //         transformValues[SkMatrix::kASkewX], transformValues[SkMatrix::kAScaleY],
         //         transformValues[SkMatrix::kATransX], transformValues[SkMatrix::kATransY]);
-        // 行列のオーダー
-        // from https://github.com/google/skia/blob/master/src/core/SkMatrix.cpp
-        // [scale-x    skew-x      trans-x]   [X]   [X']
-        // [skew-y     scale-y     trans-y] * [Y] = [Y']
-        // [persp-0    persp-1     persp-2]   [1]   [1 ]
+        /*
+         enum {
+            kMScaleX, kMSkewX,  kMTransX,
+            kMSkewY,  kMScaleY, kMTransY,
+            kMPersp0, kMPersp1, kMPersp2
+        };
+        enum {
+            kAScaleX,
+            kASkewY,
+            kASkewX,
+            kAScaleY,
+            kATransX,
+            kATransY
+        };
+         */
         matrix.Concat(
-                transform[0], transform[1], transform[2],
-                transform[3], transform[4], transform[5]
+                transform[0], transform[3],
+                transform[1], transform[4],
+                transform[2], transform[5]
         );
     }
     pageContext->AppendObjectList(pPage, &matrix);
@@ -242,37 +257,43 @@ static void renderPageBitmap(FPDF_BITMAP bitmap, FPDF_PAGE page, int destLeft, i
 }
 
 JNIEXPORT void JNICALL Java_tv_loilo_pdfium_PdfRenderer_nativeRenderPage
-(JNIEnv *env,jobject thiz, jlong documentPtr ,jlong pagePtr, jobject bitmap,
+(JNIEnv *env,jobject thiz, jlong documentPtr ,jlong pagePtr, jobject jbitmap,
     jint destLeft, jint destTop , jint destRight, jint destBottom , jfloatArray matrix, jint renderMode) {
 AndroidBitmapInfo info;
-    void *pixels;
-    if ( AndroidBitmap_getInfo(env, bitmap, &info ) < 0 ) {
-        return ;
+    if (AndroidBitmap_getInfo(env, jbitmap, &info ) < 0) {
+        LOGE("failed AndroidBitmap_getInfo");
+        return;
     }
     if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
         LOGD("invalid format. only ANDROID_BITMAP_FORMAT_RGBA_8888 is accepted.");
         return;
     }
-    if (AndroidBitmap_lockPixels(env, bitmap, &pixels) < 0) {
+    void *pixels;
+    if (AndroidBitmap_lockPixels(env, jbitmap, &pixels) < 0) {
+        LOGE("failed AndroidBitmap_lockPixels");
         return;
     }
     FPDF_PAGE page = reinterpret_cast<FPDF_PAGE>(pagePtr);
-    FPDF_BITMAP fpdf_bitmap = FPDFBitmap_CreateEx(info.width, info.height,
+    FPDF_BITMAP bitmap = FPDFBitmap_CreateEx(info.width, info.height,
                                                   FPDFBitmap_BGRA, pixels, info.stride);
     if (!bitmap) {
         LOGE("Erorr creating bitmap");
         return;
     }
 
-    size_t transform_len = env->GetArrayLength(matrix);
-    if (transform_len != 9) {
-        ll_jniThrowException(env, "java/lang/InvalidArgumentsException", "transform length is not 9");
-        return;
-    }
-    float transform[transform_len];
-    jfloat *matrixBody = env->GetFloatArrayElements(matrix, 0);
-    for (int i = 0;i<transform_len; i++) {
-        transform[i] = matrixBody[i];
+    float *transform = NULL;
+    if (matrix) {
+        size_t transform_len = env->GetArrayLength(matrix);
+        if (transform_len != 9) {
+            ll_jniThrowException(env, "java/lang/InvalidArgumentsException", "transform length is not 9");
+            return;
+        }
+        transform = new float[9];
+        jfloat *matrixBody = env->GetFloatArrayElements(matrix, 0);
+        for (int i = 0; i < transform_len; i++) {
+            transform[i] = matrixBody[i];
+        }
+        env->ReleaseFloatArrayElements(matrix,matrixBody,0);
     }
 
     int renderFlags = 0;
@@ -281,9 +302,10 @@ AndroidBitmapInfo info;
     } else if (renderMode == RENDER_MODE_FOR_PRINT) {
         renderFlags |= FPDF_PRINTING;
     }
-    renderPageBitmap(fpdf_bitmap, page, destLeft, destTop, destRight,
+    renderPageBitmap(bitmap, page, destLeft, destTop, destRight,
             destBottom, transform, renderFlags);
-    AndroidBitmap_unlockPixels(env, bitmap);
+    AndroidBitmap_unlockPixels(env, jbitmap);
+    delete[] transform;
 }
 
 JNIEXPORT void JNICALL Java_tv_loilo_pdfium_PdfRenderer_nativeClosePage

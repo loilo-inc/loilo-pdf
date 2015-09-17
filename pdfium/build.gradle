@@ -31,3 +31,29 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.2.1'
 }
+
+tasks.withType(JavaCompile) {
+    compileTask -> compileTask.dependsOn ndkBuild
+}
+
+ext {
+    def props = new Properties()
+    new File("local.properties").withInputStream {
+        stream -> props.load(stream)
+    }
+    local = props
+}
+
+// http://serenegiant.com/blog/?p=2393
+// NDKの通常の方法でndl-buildを呼び出して実行する(自前のAndroid.mk, Application.mkが有効)
+task ndkBuild (type: Exec, description: 'Compile JNI source via NDK') {
+    println('executing ndkBuild')
+    def ndkBuildingDir = local["ndk.dir"]
+    def ndkBuildPath
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        ndkBuildPath = ndkBuildingDir + '/ndk-build.cmd'
+    } else {
+        ndkBuildPath = ndkBuildingDir + '/ndk-build'
+    }
+    commandLine ndkBuildPath, '-j4', '-C', file('src/main/jni').absolutePath
+}

@@ -3,28 +3,28 @@ package tv.loilo.pdfiumandroid
 import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.Bitmap
+import android.graphics.Matrix
+import android.graphics.Rect
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.view.Menu
 import android.view.MenuItem
-import android.view.SurfaceHolder
-import android.view.SurfaceView
+import android.widget.ImageView
 import tv.loilo.pdfium.PdfRenderer
 import java.io.File
 
 public class MainActivity : AppCompatActivity() {
 
-    var holder: SurfaceHolder? = null
+    var imageView: ImageView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        imageView = (findViewById(R.id.main_image_view) as ImageView)
     }
 
     override fun onStart() {
         super.onStart()
-        val surface = (findViewById(R.id.main_surface) as SurfaceView)
-        holder = surface.getHolder()
         val outFile = File(getFilesDir(), "manual.pdf")
         if (!outFile.exists()) {
             getAssets().open("manual.pdf").use { inst ->
@@ -48,12 +48,14 @@ public class MainActivity : AppCompatActivity() {
         val out = Bitmap.createBitmap(
                 page1.getWidth(),
                 page1.getHeight(),
-                Bitmap.Config.ARGB_8888
+                Bitmap.Config.ARGB_8888 // ONLY ARGB_8888
         )
-        page1.render(out,null,null,0)
-        val canvas = holder!!.lockCanvas()
-        canvas.drawBitmap(out,0f,0f,null)
-        holder!!.unlockCanvasAndPost(canvas)
+        val x2 = Matrix();
+        x2.setScale(2f,2f);
+        page1.render(out, null, x2, 1);
+        imageView!!.setImageBitmap(out);
+        page1.close()
+        renderer.close()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

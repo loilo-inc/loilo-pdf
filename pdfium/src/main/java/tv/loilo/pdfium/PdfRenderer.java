@@ -7,12 +7,12 @@ package tv.loilo.pdfium;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.io.IOException;
 import java.lang.annotation.Retention;
@@ -102,7 +102,7 @@ public final class PdfRenderer implements AutoCloseable {
     // TODO CloseGuardは完全にプライベートなクラスなのでどうしようもない
 //    private final CloseGuard mCloseGuard = CloseGuard.get();
 
-    private final Point mTempPoint = new Point();
+    private final double[] mTempPoint = new double[2];
 
     private final long mNativeDocument;
 
@@ -286,11 +286,10 @@ public final class PdfRenderer implements AutoCloseable {
         private long mNativePage;
 
         private Page(int index) {
-            Point size = mTempPoint;
-            mNativePage = nativeOpenPageAndGetSize(mNativeDocument, index, size);
+            mNativePage = nativeOpenPageAndGetSize(mNativeDocument, index, mTempPoint);
             mIndex = index;
-            mWidth = size.x;
-            mHeight = size.y;
+            mWidth = (int)mTempPoint[0];
+            mHeight = (int)mTempPoint[1];
 //            mCloseGuard.open("close")/;
         }
 
@@ -377,6 +376,13 @@ public final class PdfRenderer implements AutoCloseable {
             if (transform != null) {
                 transformArray = new float[9];
                 transform.getValues(transformArray);
+                /*
+                 enum {
+                    kMScaleX, kMSkewX,  kMTransX,
+                    kMSkewY,  kMScaleY, kMTransY,
+                    kMPersp0, kMPersp1, kMPersp2
+                };
+                */
                 boolean isAffine =
                         transformArray[Matrix.MPERSP_0] == 0
                                 && transformArray[Matrix.MPERSP_1] == 0
@@ -449,6 +455,6 @@ public final class PdfRenderer implements AutoCloseable {
     private static native void nativeRenderPage(long documentPtr, long pagePtr, Bitmap dest,
                                                 int destLeft, int destTop, int destRight, int destBottom, float[] matrix, int renderMode);
     private static native long nativeOpenPageAndGetSize(long documentPtr, int pageIndex,
-                                                        Point outSize);
+                                                        double outSize[]);
     private static native void nativeClosePage(long pagePtr);
 }
