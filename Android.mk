@@ -31,16 +31,20 @@ ifeq ($(strip $(TARGET_ARCH)),arm)
 endif
 
 # ARM v8 64-bit NEON
-# TODO (msarett): Figure out why this won't compile on Nexus 9.
+# TODO (msarett): Figure out why we can't compile NEON on Nexus 9.
 LOCAL_SRC_FILES_arm64 += jsimd_none.c
 
 # TODO (msarett): x86 and x86_64 SIMD.  Cross-compiling these assembly files
 #                 on Linux for Android is very tricky.  This will require a
 #                 YASM or NASM as a dependency.
+LOCAL_SRC_FILES_x86 += jsimd_none.c
+LOCAL_SRC_FILES_x86_64 += jsimd_none.c
 
 # TODO (msarett): MIPS SIMD.  This is available in upstream libjpeg-turbo,
 #                 but has not been cherry picked into the version used by
 #                 Android.
+LOCAL_SRC_FILES_mips += jsimd_none.c
+LOCAL_SRC_FILES_mips64 += jsimd_none.c
 
 LOCAL_CFLAGS += -O3 -fstrict-aliasing
 LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)
