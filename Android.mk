@@ -32,7 +32,7 @@ endif
 
 # ARM v8 64-bit NEON
 # TODO (msarett): Figure out why this won't compile on Nexus 9.
-# LOCAL_SRC_FILES_arm64 += simd/jsimd_arm64_neon.S simd/jsimd_arm64.c
+LOCAL_SRC_FILES_arm64 += jsimd_none.c
 
 # TODO (msarett): x86 and x86_64 SIMD.  Cross-compiling these assembly files
 #                 on Linux for Android is very tricky.  This will require a
