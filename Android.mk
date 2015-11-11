@@ -9,6 +9,11 @@ include $(CLEAR_VARS)
 #                 preferred to thumb mode for libjpeg-turbo.
 LOCAL_ARM_MODE := arm
 
+# BUG:25564571
+# Clang fails to compile the ARM v8 NEON asembly, and libjpeg-turbo may perform
+# better when compiled with gcc.
+LOCAL_CLANG := false
+
 LOCAL_SRC_FILES := \
     jcapimin.c jcapistd.c jccoefct.c jccolor.c jcdctmgr.c jchuff.c \
     jcinit.c jcmainct.c jcmarker.c jcmaster.c jcomapi.c jcparam.c \
@@ -31,8 +36,7 @@ ifeq ($(strip $(TARGET_ARCH)),arm)
 endif
 
 # ARM v8 64-bit NEON
-# TODO (msarett): Figure out why we can't compile NEON on Nexus 9.
-LOCAL_SRC_FILES_arm64 += jsimd_none.c
+LOCAL_SRC_FILES_arm64 += simd/jsimd_arm64_neon.S simd/jsimd_arm64.c
 
 # TODO (msarett): x86 and x86_64 SIMD.  Cross-compiling these assembly files
 #                 on Linux for Android is very tricky.  This will require a
