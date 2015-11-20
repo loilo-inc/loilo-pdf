@@ -9,11 +9,6 @@ include $(CLEAR_VARS)
 #                 preferred to thumb mode for libjpeg-turbo.
 LOCAL_ARM_MODE := arm
 
-# BUG:25564571
-# Clang fails to compile the ARM v8 NEON asembly, and libjpeg-turbo may perform
-# better when compiled with gcc.
-LOCAL_CLANG := false
-
 LOCAL_SRC_FILES := \
     jcapimin.c jcapistd.c jccoefct.c jccolor.c jcdctmgr.c jchuff.c \
     jcinit.c jcmainct.c jcmarker.c jcmaster.c jcomapi.c jcparam.c \
@@ -34,6 +29,11 @@ ifeq ($(strip $(TARGET_ARCH)),arm)
     LOCAL_CFLAGS += -D__ARM_HAVE_NEON__
   endif
 endif
+
+# BUG:25564571
+# The clang assembler fails to recognize a directive in the ARM v8 NEON
+# assembly.  This is a temporary fix.
+LOCAL_ASFLAGS_arm64 := -fno-integrated-as
 
 # ARM v8 64-bit NEON
 LOCAL_SRC_FILES_arm64 += simd/jsimd_arm64_neon.S simd/jsimd_arm64.c
