@@ -1,16 +1,17 @@
+/* jconfig.h.  Generated from jconfig.h.in by configure.  */
 /* Version ID for the JPEG library.
  * Might be useful for tests like "#if JPEG_LIB_VERSION >= 60".
  */
-#define JPEG_LIB_VERSION  62	/* Version 6b */
+#define JPEG_LIB_VERSION 62
 
 /* libjpeg-turbo version */
-#define LIBJPEG_TURBO_VERSION 0
+#define LIBJPEG_TURBO_VERSION 1.4.2
 
 /* Support arithmetic encoding */
-#undef C_ARITH_CODING_SUPPORTED
+/* #define C_ARITH_CODING_SUPPORTED 1 */
 
 /* Support arithmetic decoding */
-#undef D_ARITH_CODING_SUPPORTED
+/* #define D_ARITH_CODING_SUPPORTED 1 */
 
 /*
  * Define BITS_IN_JSAMPLE as either
@@ -24,50 +25,54 @@
 #define BITS_IN_JSAMPLE  8      /* use 8 or 12 */
 
 /* Define to 1 if you have the <locale.h> header file. */
-#undef HAVE_LOCALE_H
+#define HAVE_LOCALE_H 1
 
 /* Define to 1 if you have the <stddef.h> header file. */
-#undef HAVE_STDDEF_H
+#define HAVE_STDDEF_H 1
 
 /* Define to 1 if you have the <stdlib.h> header file. */
-#undef HAVE_STDLIB_H
+#define HAVE_STDLIB_H 1
 
 /* Define to 1 if the system has the type `unsigned char'. */
-#undef HAVE_UNSIGNED_CHAR
+#define HAVE_UNSIGNED_CHAR 1
 
 /* Define to 1 if the system has the type `unsigned short'. */
-#undef HAVE_UNSIGNED_SHORT
+#define HAVE_UNSIGNED_SHORT 1
 
 /* Compiler does not support pointers to undefined structures. */
-#undef INCOMPLETE_TYPES_BROKEN
+/* #undef INCOMPLETE_TYPES_BROKEN */
 
 /* Support in-memory source/destination managers */
-#undef MEM_SRCDST_SUPPORTED
+#define MEM_SRCDST_SUPPORTED 1
 
 /* Define if you have BSD-like bzero and bcopy in <strings.h> rather than
    memset/memcpy in <string.h>. */
-#undef NEED_BSD_STRINGS
+/* #undef NEED_BSD_STRINGS */
 
 /* Define if you need to include <sys/types.h> to get size_t. */
-#undef NEED_SYS_TYPES_H
+/* #undef NEED_SYS_TYPES_H 1 */
 
 /* Define if your (broken) compiler shifts signed values as if they were
    unsigned. */
-#undef RIGHT_SHIFT_IS_UNSIGNED
+/* #undef RIGHT_SHIFT_IS_UNSIGNED */
 
 /* Use accelerated SIMD routines. */
-#undef WITH_SIMD
+#define WITH_SIMD 1
 
 /* Define to 1 if type `char' is unsigned and you are not using gcc.  */
 #ifndef __CHAR_UNSIGNED__
-# undef __CHAR_UNSIGNED__
+/* # undef __CHAR_UNSIGNED__ */
 #endif
 
 /* Define to empty if `const' does not conform to ANSI C. */
-#undef const
+/* #undef const */
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
-#undef size_t
+/* #undef size_t */
 
 /* The size of `size_t', as computed by sizeof. */
-#undef SIZEOF_SIZE_T
+#if __WORDSIZE==64 || defined(_WIN64)
+#define SIZEOF_SIZE_T 8
+#else
+#define SIZEOF_SIZE_T 4
+#endif
