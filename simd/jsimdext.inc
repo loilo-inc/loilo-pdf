@@ -179,7 +179,13 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 ;  External Symbol Name
 ;
 %ifndef EXTN
-%define EXTN(name)   _ %+ name          ; foo() -> _foo
+# Android Modification:
+# The unmodified code from upstream appends an underscore to the front of
+# "name" here.  It is unclear why.  Before removing the underscore, the
+# code failed to link because the function names in the SIMD code did not
+# match the callers (because of the extra underscore).  This fix only
+# applies to x86 SIMD code.  x86_64 is handled properly by the code above.
+%define EXTN(name)  name
 %endif
 
 ; --------------------------------------------------------------------------

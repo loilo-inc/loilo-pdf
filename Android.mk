@@ -38,15 +38,34 @@ LOCAL_ASFLAGS_arm64 := -fno-integrated-as
 # ARM v8 64-bit NEON
 LOCAL_SRC_FILES_arm64 += simd/jsimd_arm64_neon.S simd/jsimd_arm64.c
 
-# TODO (msarett): x86 and x86_64 SIMD.  Cross-compiling these assembly files
-#                 on Linux for Android is very tricky.  This will require a
-#                 YASM or NASM as a dependency.
-LOCAL_SRC_FILES_x86 += jsimd_none.c
-LOCAL_SRC_FILES_x86_64 += jsimd_none.c
+# x86 MMX and SSE2
+LOCAL_SRC_FILES_x86 += \
+      simd/jsimd_i386.c simd/jccolor-mmx.asm simd/jccolor-sse2.asm \
+      simd/jcgray-mmx.asm  simd/jcgray-sse2.asm simd/jcsample-mmx.asm \
+      simd/jcsample-sse2.asm simd/jdcolor-mmx.asm simd/jdcolor-sse2.asm \
+      simd/jdmerge-mmx.asm simd/jdmerge-sse2.asm simd/jdsample-mmx.asm \
+      simd/jdsample-sse2.asm simd/jfdctflt-3dn.asm simd/jfdctflt-sse.asm \
+      simd/jfdctfst-mmx.asm simd/jfdctfst-sse2.asm simd/jfdctint-mmx.asm \
+      simd/jfdctint-sse2.asm simd/jidctflt-3dn.asm simd/jidctflt-sse2.asm \
+      simd/jidctflt-sse.asm simd/jidctfst-mmx.asm simd/jidctfst-sse2.asm \
+      simd/jidctint-mmx.asm simd/jidctint-sse2.asm simd/jidctred-mmx.asm \
+      simd/jidctred-sse2.asm simd/jquant-3dn.asm simd/jquantf-sse2.asm \
+      simd/jquanti-sse2.asm simd/jquant-mmx.asm simd/jquant-sse.asm \
+      simd/jsimdcpu.asm
 
-# TODO (msarett): MIPS SIMD.  This is available in upstream libjpeg-turbo,
-#                 but has not been cherry picked into the version used by
-#                 Android.
+# x86-64 SSE2
+LOCAL_SRC_FILES_x86_64 += \
+      simd/jsimd_x86_64.c simd/jccolor-sse2-64.asm simd/jcgray-sse2-64.asm \
+      simd/jcsample-sse2-64.asm simd/jdcolor-sse2-64.asm \
+      simd/jdmerge-sse2-64.asm simd/jdsample-sse2-64.asm \
+      simd/jfdctflt-sse-64.asm simd/jfdctfst-sse2-64.asm \
+      simd/jfdctint-sse2-64.asm simd/jidctflt-sse2-64.asm \
+      simd/jidctfst-sse2-64.asm simd/jidctint-sse2-64.asm \
+      simd/jidctred-sse2-64.asm simd/jquantf-sse2-64.asm \
+      simd/jquanti-sse2-64.asm
+LOCAL_ASFLAGS_x86_64 += -D__x86_64__
+
+# TODO (msarett): Compile MIPS SIMD.
 LOCAL_SRC_FILES_mips += jsimd_none.c
 LOCAL_SRC_FILES_mips64 += jsimd_none.c
 
@@ -69,6 +88,12 @@ ifneq (,$(TARGET_BUILD_APPS))
   # Unbundled branch, built against NDK.
   LOCAL_SDK_VERSION := 17
 endif
+
+# Turn off position independent code (PIC) warning.  This is because YASM
+# cannot generate position independent code.  YASM is the build tool for the
+# x86 and x86-64 SIMD.
+LOCAL_LDFLAGS_x86 += -Wl,--no-warn-shared-textrel
+LOCAL_LDFLAGS_x86_64 += -Wl,--no-warn-shared-textrel
 
 LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)
 LOCAL_WHOLE_STATIC_LIBRARIES = libjpeg-turbo_static
