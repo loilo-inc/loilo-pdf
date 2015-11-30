@@ -52,6 +52,7 @@ LOCAL_SRC_FILES_x86 += \
       simd/jidctred-sse2.asm simd/jquant-3dn.asm simd/jquantf-sse2.asm \
       simd/jquanti-sse2.asm simd/jquant-mmx.asm simd/jquant-sse.asm \
       simd/jsimdcpu.asm
+LOCAL_C_INCLUDES_x86 += $(LOCAL_PATH)/simd
 
 # x86-64 SSE2
 LOCAL_SRC_FILES_x86_64 += \
@@ -64,6 +65,7 @@ LOCAL_SRC_FILES_x86_64 += \
       simd/jidctred-sse2-64.asm simd/jquantf-sse2-64.asm \
       simd/jquanti-sse2-64.asm
 LOCAL_ASFLAGS_x86_64 += -D__x86_64__
+LOCAL_C_INCLUDES_x86_64 += $(LOCAL_PATH)/simd
 
 # TODO (msarett): Compile MIPS SIMD.
 LOCAL_SRC_FILES_mips += jsimd_none.c
