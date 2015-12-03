@@ -34,6 +34,9 @@ endif
 # The clang assembler fails to recognize a directive in the ARM v8 NEON
 # assembly.  This is a temporary fix.
 LOCAL_ASFLAGS_arm64 := -fno-integrated-as
+# The above flag is not recognized by gcc, so make sure we always build
+# with clang.
+LOCAL_CLANG := true
 
 # ARM v8 64-bit NEON
 LOCAL_SRC_FILES_arm64 += simd/jsimd_arm64_neon.S simd/jsimd_arm64.c
