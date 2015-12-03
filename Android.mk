@@ -83,7 +83,7 @@ ifneq (,$(TARGET_BUILD_APPS))
 endif
 
 # Build as a static library.
-LOCAL_MODULE := libjpeg-turbo_static
+LOCAL_MODULE := libjpeg_static
 include $(BUILD_STATIC_LIBRARY)
 
 # Also build as a shared library.
@@ -101,6 +101,6 @@ LOCAL_LDFLAGS_x86 += -Wl,--no-warn-shared-textrel
 LOCAL_LDFLAGS_x86_64 += -Wl,--no-warn-shared-textrel
 
 LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)
-LOCAL_WHOLE_STATIC_LIBRARIES = libjpeg-turbo_static
-LOCAL_MODULE := libjpeg-turbo
+LOCAL_WHOLE_STATIC_LIBRARIES = libjpeg_static
+LOCAL_MODULE := libjpeg
 include $(BUILD_SHARED_LIBRARY)
