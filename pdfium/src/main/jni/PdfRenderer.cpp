@@ -261,6 +261,7 @@ AndroidBitmapInfo info;
     FPDF_BITMAP bitmap = FPDFBitmap_CreateEx(info.width, info.height,
                                                   FPDFBitmap_BGRA, pixels, info.stride);
     if (!bitmap) {
+        AndroidBitmap_unlockPixels(env, jbitmap);
         LOGE("Erorr creating bitmap");
         return;
     }
@@ -269,6 +270,7 @@ AndroidBitmapInfo info;
     if (matrix) {
         size_t transform_len = env->GetArrayLength(matrix);
         if (transform_len != 9) {
+            AndroidBitmap_unlockPixels(env, jbitmap);
             ll_jniThrowException(env, "java/lang/InvalidArgumentsException", "transform length is not 9");
             return;
         }
