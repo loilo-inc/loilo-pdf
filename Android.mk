@@ -42,33 +42,43 @@ LOCAL_CLANG := true
 LOCAL_SRC_FILES_arm64 += simd/jsimd_arm64_neon.S simd/jsimd_arm64.c
 
 # x86 MMX and SSE2
-LOCAL_SRC_FILES_x86 += \
-      simd/jsimd_i386.c simd/jccolor-mmx.asm simd/jccolor-sse2.asm \
-      simd/jcgray-mmx.asm  simd/jcgray-sse2.asm simd/jcsample-mmx.asm \
-      simd/jcsample-sse2.asm simd/jdcolor-mmx.asm simd/jdcolor-sse2.asm \
-      simd/jdmerge-mmx.asm simd/jdmerge-sse2.asm simd/jdsample-mmx.asm \
-      simd/jdsample-sse2.asm simd/jfdctflt-3dn.asm simd/jfdctflt-sse.asm \
-      simd/jfdctfst-mmx.asm simd/jfdctfst-sse2.asm simd/jfdctint-mmx.asm \
-      simd/jfdctint-sse2.asm simd/jidctflt-3dn.asm simd/jidctflt-sse2.asm \
-      simd/jidctflt-sse.asm simd/jidctfst-mmx.asm simd/jidctfst-sse2.asm \
-      simd/jidctint-mmx.asm simd/jidctint-sse2.asm simd/jidctred-mmx.asm \
-      simd/jidctred-sse2.asm simd/jquant-3dn.asm simd/jquantf-sse2.asm \
-      simd/jquanti-sse2.asm simd/jquant-mmx.asm simd/jquant-sse.asm \
-      simd/jsimdcpu.asm
-LOCAL_C_INCLUDES_x86 += $(LOCAL_PATH)/simd
+# FIXME: BUG 26023491
+ifeq (true, true)
+  LOCAL_SRC_FILES_x86 += jsimd_none.c
+else
+  LOCAL_SRC_FILES_x86 += \
+        simd/jsimd_i386.c simd/jccolor-mmx.asm simd/jccolor-sse2.asm \
+        simd/jcgray-mmx.asm  simd/jcgray-sse2.asm simd/jcsample-mmx.asm \
+        simd/jcsample-sse2.asm simd/jdcolor-mmx.asm simd/jdcolor-sse2.asm \
+        simd/jdmerge-mmx.asm simd/jdmerge-sse2.asm simd/jdsample-mmx.asm \
+        simd/jdsample-sse2.asm simd/jfdctflt-3dn.asm simd/jfdctflt-sse.asm \
+        simd/jfdctfst-mmx.asm simd/jfdctfst-sse2.asm simd/jfdctint-mmx.asm \
+        simd/jfdctint-sse2.asm simd/jidctflt-3dn.asm simd/jidctflt-sse2.asm \
+        simd/jidctflt-sse.asm simd/jidctfst-mmx.asm simd/jidctfst-sse2.asm \
+        simd/jidctint-mmx.asm simd/jidctint-sse2.asm simd/jidctred-mmx.asm \
+        simd/jidctred-sse2.asm simd/jquant-3dn.asm simd/jquantf-sse2.asm \
+        simd/jquanti-sse2.asm simd/jquant-mmx.asm simd/jquant-sse.asm \
+        simd/jsimdcpu.asm
+  LOCAL_C_INCLUDES_x86 += $(LOCAL_PATH)/simd
+endif
 
 # x86-64 SSE2
-LOCAL_SRC_FILES_x86_64 += \
-      simd/jsimd_x86_64.c simd/jccolor-sse2-64.asm simd/jcgray-sse2-64.asm \
-      simd/jcsample-sse2-64.asm simd/jdcolor-sse2-64.asm \
-      simd/jdmerge-sse2-64.asm simd/jdsample-sse2-64.asm \
-      simd/jfdctflt-sse-64.asm simd/jfdctfst-sse2-64.asm \
-      simd/jfdctint-sse2-64.asm simd/jidctflt-sse2-64.asm \
-      simd/jidctfst-sse2-64.asm simd/jidctint-sse2-64.asm \
-      simd/jidctred-sse2-64.asm simd/jquantf-sse2-64.asm \
-      simd/jquanti-sse2-64.asm
-LOCAL_ASFLAGS_x86_64 += -D__x86_64__
-LOCAL_C_INCLUDES_x86_64 += $(LOCAL_PATH)/simd
+# FIXME: BUG 26023491
+ifeq (true, true)
+  LOCAL_SRC_FILES_x86_64 += jsimd_none.c
+else
+  LOCAL_SRC_FILES_x86_64 += \
+        simd/jsimd_x86_64.c simd/jccolor-sse2-64.asm simd/jcgray-sse2-64.asm \
+        simd/jcsample-sse2-64.asm simd/jdcolor-sse2-64.asm \
+        simd/jdmerge-sse2-64.asm simd/jdsample-sse2-64.asm \
+        simd/jfdctflt-sse-64.asm simd/jfdctfst-sse2-64.asm \
+        simd/jfdctint-sse2-64.asm simd/jidctflt-sse2-64.asm \
+        simd/jidctfst-sse2-64.asm simd/jidctint-sse2-64.asm \
+        simd/jidctred-sse2-64.asm simd/jquantf-sse2-64.asm \
+        simd/jquanti-sse2-64.asm
+  LOCAL_ASFLAGS_x86_64 += -D__x86_64__
+  LOCAL_C_INCLUDES_x86_64 += $(LOCAL_PATH)/simd
+endif
 
 # TODO (msarett): Compile MIPS SIMD.
 LOCAL_SRC_FILES_mips += jsimd_none.c
@@ -93,12 +103,6 @@ ifneq (,$(TARGET_BUILD_APPS))
   # Unbundled branch, built against NDK.
   LOCAL_SDK_VERSION := 17
 endif
-
-# Turn off position independent code (PIC) warning.  This is because YASM
-# cannot generate position independent code.  YASM is the build tool for the
-# x86 and x86-64 SIMD.
-LOCAL_LDFLAGS_x86 += -Wl,--no-warn-shared-textrel
-LOCAL_LDFLAGS_x86_64 += -Wl,--no-warn-shared-textrel
 
 LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)
 LOCAL_WHOLE_STATIC_LIBRARIES = libjpeg_static
