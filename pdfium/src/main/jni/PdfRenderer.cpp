@@ -201,27 +201,7 @@ static void renderPageBitmap(FPDF_BITMAP bitmap, FPDF_PAGE page, int destLeft, i
     } else {
         // PDF's coordinate system origin is left-bottom while
         // in graphics it is the top-left, so remap the origin.
-        matrix.Set(1, 0, 0, -1, 0, pPage->GetPageHeight());
-        // SkScalar transformValues[6];
-        // transform->asAffine(transformValues);
-        // matrix.Concat(transformValues[SkMatrix::kAScaleX], transformValues[SkMatrix::kASkewY],
-        //         transformValues[SkMatrix::kASkewX], transformValues[SkMatrix::kAScaleY],
-        //         transformValues[SkMatrix::kATransX], transformValues[SkMatrix::kATransY]);
-        /*
-         enum {
-            kMScaleX, kMSkewX,  kMTransX,
-            kMSkewY,  kMScaleY, kMTransY,
-            kMPersp0, kMPersp1, kMPersp2
-        };
-        enum {
-            kAScaleX,
-            kASkewY,
-            kASkewX,
-            kAScaleY,
-            kATransX,
-            kATransY
-        };
-         */
+        matrix.Set(1, 0, 0, -1, 0, pPage->GetPageHeight());      
         matrix.Concat(
                 transform[0], transform[3],
                 transform[1], transform[4],
