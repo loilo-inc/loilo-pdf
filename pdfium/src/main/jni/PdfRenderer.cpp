@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 LoiLo Inc,
+ * Copyright 2014 The Android Open Source Project,
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -217,7 +217,7 @@ static void renderPageBitmap(FPDF_BITMAP bitmap, FPDF_PAGE page, int destLeft, i
     } else {
         // PDF's coordinate system origin is left-bottom while
         // in graphics it is the top-left, so remap the origin.
-        matrix.Set(1, 0, 0, -1, 0, pPage->GetPageHeight());      
+        matrix.Set(1, 0, 0, -1, 0, pPage->GetPageHeight());
         matrix.Concat(
                 transform[0], transform[3],
                 transform[1], transform[4],
