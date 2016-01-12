@@ -46,7 +46,7 @@ import java.lang.annotation.RetentionPolicy;
  * </p>
  * <pre>
  * // create a new renderer
- * PdfRenderer renderer = new PdfRenderer(getSeekableFileDescriptor());
+ * PdfRendererCompat renderer = new PdfRendererCompat(getSeekableFileDescriptor());
  *
  * // let us just render all pages
  * final int pageCount = renderer.getPageCount();
@@ -94,7 +94,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  * @see #close()
  */
-public final class PdfRenderer implements AutoCloseable {
+public final class PdfRendererCompat implements AutoCloseable {
     // TODO CloseGuardは完全にプライベートなクラスなのでどうしようもない
 //    private final CloseGuard mCloseGuard = CloseGuard.get();
 
@@ -133,7 +133,7 @@ public final class PdfRenderer implements AutoCloseable {
      * @throws java.lang.SecurityException If the file requires a password or
      *         the security scheme is not supported.
      */
-    public PdfRenderer(@NonNull ParcelFileDescriptor input) throws IOException {
+    public PdfRendererCompat(@NonNull ParcelFileDescriptor input) throws IOException {
         if (input == null) {
             throw new NullPointerException("input cannot be null");
         }
@@ -159,7 +159,7 @@ public final class PdfRenderer implements AutoCloseable {
     /* load our native library */
     static {
         try {
-            System.loadLibrary("pdfRenderer");
+            System.loadLibrary("pdfRendererCompat");
         } catch (UnsatisfiedLinkError ignored){
             ignored.printStackTrace();
         }
@@ -204,7 +204,7 @@ public final class PdfRenderer implements AutoCloseable {
      * @param index The page index.
      * @return A page that can be rendered.
      *
-     * @see android.graphics.pdf.PdfRenderer.Page#close() PdfRenderer.Page.close()
+     * @see android.graphics.pdf.PdfRenderer.Page#close() PdfRendererCompat.Page.close()
      */
     public Page openPage(int index) {
         throwIfClosed();

@@ -10,7 +10,7 @@ include $(PREBUILT_SHARED_LIBRARY)
 
 #Main JNI library
 include $(CLEAR_VARS)
-LOCAL_MODULE := pdfRenderer
+LOCAL_MODULE := pdfRendererCompat
 
 LOCAL_CFLAGS += -DHAVE_PTHREADS
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/pdfum/core/include
@@ -19,6 +19,6 @@ LOCAL_C_INCLUDES += $(LOCAL_PATH)/include
 LOCAL_SHARED_LIBRARIES += pdfium
 LOCAL_LDLIBS += -llog -landroid -ljnigraphics
 
-LOCAL_SRC_FILES :=  $(LOCAL_PATH)/PdfRenderer.cpp
+LOCAL_SRC_FILES :=  $(LOCAL_PATH)/pdfRendererCompat.cpp
 
 include $(BUILD_SHARED_LIBRARY)
