@@ -95,7 +95,7 @@ static void DropContext(void* data) {
     delete (CRenderContext*) data;
 }
 
-JNIEXPORT jlong JNICALL Java_tv_loilo_pdfium_PdfRenderer_nativeCreate
+JNIEXPORT jlong JNICALL Java_tv_loilo_pdfium_PdfRendererCompat_nativeCreate
 (JNIEnv *env, jobject thiz, jint fd, jlong size) {
     initializeLibraryIfNeeded();
 
@@ -128,7 +128,7 @@ JNIEXPORT jlong JNICALL Java_tv_loilo_pdfium_PdfRenderer_nativeCreate
     return reinterpret_cast<jlong>(document);
 }
 
-JNIEXPORT jlong JNICALL Java_tv_loilo_pdfium_PdfRenderer_nativeOpenPageAndGetSize
+JNIEXPORT jlong JNICALL Java_tv_loilo_pdfium_PdfRendererCompat_nativeOpenPageAndGetSize
 (JNIEnv *env, jobject thiz, jlong documentPtr, jint pageIndex, jdoubleArray outSize) {
     FPDF_DOCUMENT document = reinterpret_cast<FPDF_DOCUMENT>(documentPtr);
 
@@ -236,7 +236,7 @@ static void renderPageBitmap(FPDF_BITMAP bitmap, FPDF_PAGE page, int destLeft, i
     delete pContext;
 }
 
-JNIEXPORT void JNICALL Java_tv_loilo_pdfium_PdfRenderer_nativeRenderPage
+JNIEXPORT void JNICALL Java_tv_loilo_pdfium_PdfRendererCompat_nativeRenderPage
 (JNIEnv *env,jobject thiz, jlong documentPtr ,jlong pagePtr, jobject jbitmap,
     jint destLeft, jint destTop , jint destRight, jint destBottom , jfloatArray matrix, jint renderMode) {
 AndroidBitmapInfo info;
@@ -290,26 +290,26 @@ AndroidBitmapInfo info;
     delete[] transform;
 }
 
-JNIEXPORT void JNICALL Java_tv_loilo_pdfium_PdfRenderer_nativeClosePage
+JNIEXPORT void JNICALL Java_tv_loilo_pdfium_PdfRendererCompat_nativeClosePage
 (JNIEnv * env,jobject thiz, jlong pagePtr) {
     FPDF_PAGE page = reinterpret_cast<FPDF_PAGE>(pagePtr);
     FPDF_ClosePage(page);
 }
 
-JNIEXPORT void JNICALL Java_tv_loilo_pdfium_PdfRenderer_nativeClose
+JNIEXPORT void JNICALL Java_tv_loilo_pdfium_PdfRendererCompat_nativeClose
 (JNIEnv* env, jobject thiz, jlong documentPtr) {
     FPDF_DOCUMENT document = reinterpret_cast<FPDF_DOCUMENT>(documentPtr);
     FPDF_CloseDocument(document);
     destroyLibraryIfNeeded();
 }
 
-JNIEXPORT jint JNICALL Java_tv_loilo_pdfium_PdfRenderer_nativeGetPageCount
+JNIEXPORT jint JNICALL Java_tv_loilo_pdfium_PdfRendererCompat_nativeGetPageCount
 (JNIEnv *env, jobject thiz, jlong documentPtr) {
     FPDF_DOCUMENT document = reinterpret_cast<FPDF_DOCUMENT>(documentPtr);
     return FPDF_GetPageCount(document);
 }
 
-JNIEXPORT jboolean JNICALL Java_tv_loilo_pdfium_PdfRenderer_nativeScaleForPrinting
+JNIEXPORT jboolean JNICALL Java_tv_loilo_pdfium_PdfRendererCompat_nativeScaleForPrinting
 (JNIEnv *env, jobject thiz, jlong documentPtr) {
     FPDF_DOCUMENT document = reinterpret_cast<FPDF_DOCUMENT>(documentPtr);
     return FPDF_VIEWERREF_GetPrintScaling(document);
