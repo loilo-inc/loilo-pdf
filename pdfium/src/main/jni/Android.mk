@@ -19,6 +19,6 @@ LOCAL_C_INCLUDES += $(LOCAL_PATH)/include
 LOCAL_SHARED_LIBRARIES += pdfium
 LOCAL_LDLIBS += -llog -landroid -ljnigraphics
 
-LOCAL_SRC_FILES :=  $(LOCAL_PATH)/pdfRendererCompat.cpp
+LOCAL_SRC_FILES :=  $(LOCAL_PATH)/PdfRendererCompat.cpp
 
 include $(BUILD_SHARED_LIBRARY)
