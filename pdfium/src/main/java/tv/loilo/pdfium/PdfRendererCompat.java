@@ -26,6 +26,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -94,9 +95,16 @@ import java.lang.annotation.RetentionPolicy;
  *
  * @see #close()
  */
-public final class PdfRendererCompat implements AutoCloseable {
+public final class PdfRendererCompat implements Closeable {
     // TODO CloseGuardは完全にプライベートなクラスなのでどうしようもない
 //    private final CloseGuard mCloseGuard = CloseGuard.get();
+    static {
+        try {
+            System.loadLibrary("pdfRendererCompat");
+        } catch (UnsatisfiedLinkError ignored) {
+            ignored.printStackTrace();
+        }
+    }
 
     private final double[] mTempPoint = new double[2];
 
@@ -154,15 +162,6 @@ public final class PdfRendererCompat implements AutoCloseable {
         mNativeDocument = nativeCreate(mInput.getFd(), size);
         mPageCount = nativeGetPageCount(mNativeDocument);
 //        mCloseGuard.open("close");
-    }
-
-    /* load our native library */
-    static {
-        try {
-            System.loadLibrary("pdfRendererCompat");
-        } catch (UnsatisfiedLinkError ignored){
-            ignored.printStackTrace();
-        }
     }
 
     /**
@@ -261,7 +260,7 @@ public final class PdfRendererCompat implements AutoCloseable {
     /**
      * This class represents a PDF document page for rendering.
      */
-    public final class Page implements AutoCloseable {
+    public final class Page implements Closeable {
 
 //        private final CloseGuard mCloseGuard = CloseGuard.get();
 

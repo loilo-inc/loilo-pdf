@@ -32,32 +32,37 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        File tmp = new File(getCacheDir(),"manual.pdf");
-        try(InputStream ins = getAssets().open("manual.pdf");
+        File tmp = new File(getCacheDir(), "manual.pdf");
+        try {
+            InputStream ins = getAssets().open("manual.pdf");
             BufferedInputStream bis = new BufferedInputStream(ins);
             FileOutputStream bos = new FileOutputStream(tmp);
-            BufferedOutputStream bfw = new BufferedOutputStream(bos)
-        ){
+            BufferedOutputStream bfw = new BufferedOutputStream(bos);
             // tmp copy
             final byte[] buffer = new byte[256];
             int read = 0;
             long len = 0;
-            while((read = bis.read(buffer)) != -1) {
-                bfw.write(buffer,0,read);
+            while ((read = bis.read(buffer)) != -1) {
+                bfw.write(buffer, 0, read);
                 len += read;
             }
             bfw.flush();
-            try (ParcelFileDescriptor fd = ParcelFileDescriptor.open(tmp,ParcelFileDescriptor.MODE_READ_ONLY);
-                 PdfRendererCompat renderer = new PdfRendererCompat(fd);
-                 PdfRendererCompat.Page page1 = renderer.openPage(1)
-            ) {
-                assert renderer.getPageCount() == 38;
-                Bitmap out = Bitmap.createBitmap(page1.getWidth(), page1.getHeight(), Bitmap.Config.ARGB_8888);
-                Matrix x2 = new Matrix();
-                x2.setScale(2,2);
-                page1.render(out, null, x2, PdfRendererCompat.Page.RENDER_MODE_FOR_DISPLAY);
-                imageView.setImageBitmap(out);
-            }
+            ParcelFileDescriptor fd = ParcelFileDescriptor.open(tmp, ParcelFileDescriptor.MODE_READ_ONLY);
+            PdfRendererCompat renderer = new PdfRendererCompat(fd);
+            PdfRendererCompat.Page page1 = renderer.openPage(1);
+            assert renderer.getPageCount() == 38;
+            Bitmap out = Bitmap.createBitmap(page1.getWidth(), page1.getHeight(), Bitmap.Config.ARGB_8888);
+            Matrix x2 = new Matrix();
+            x2.setScale(2, 2);
+            page1.render(out, null, x2, PdfRendererCompat.Page.RENDER_MODE_FOR_DISPLAY);
+            imageView.setImageBitmap(out);
+            page1.close();
+            renderer.close();
+            fd.close();
+            ins.close();
+            bis.close();
+            bos.close();
+            bfw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

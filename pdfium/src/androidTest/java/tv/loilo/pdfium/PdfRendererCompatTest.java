@@ -9,9 +9,11 @@ import android.test.suitebuilder.annotation.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.junit.Assert.*;
 
 import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
 @RunWith(AndroidJUnit4.class)
 @SmallTest
@@ -30,15 +32,21 @@ public class PdfRendererCompatTest {
     public void testOpenPage() throws IOException, IllegalAccessException {
         AssetManager assets = getContext().getAssets();
         for (String file : assets.list(".")) {
-            try (AssetFileDescriptor fd = assets.openFd(file);
-                 PdfRendererCompat renderer = new PdfRendererCompat(fd.getParcelFileDescriptor())
-            ) {
+            AssetFileDescriptor fd = assets.openFd(file);
+            PdfRendererCompat renderer = new PdfRendererCompat(fd.getParcelFileDescriptor());
+            try {
                 for (int i = 0; i < renderer.getPageCount(); i++) {
                     PdfRendererCompat.Page page = renderer.openPage(i);
                     assertNotSame(0, page.getWidth());
                     assertNotSame(0, page.getHeight());
                     assertEquals(i, page.getIndex());
+                    page.close();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                fd.close();
+                renderer.close();
             }
         }
     }
