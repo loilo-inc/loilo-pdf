@@ -24,12 +24,10 @@ import tv.loilo.pdfium.PdfRendererCompat;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ViewPager pager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        pager = (ViewPager) findViewById(R.id.pager);
     }
 
     @Override
@@ -53,33 +51,12 @@ public class MainActivity extends AppCompatActivity {
             try (ParcelFileDescriptor fd = ParcelFileDescriptor.open(tmp,ParcelFileDescriptor.MODE_READ_ONLY);
                  final PdfRendererCompat renderer = new PdfRendererCompat(fd);
             ) {
-                pager.setAdapter(new PagerAdapter() {
-                    @Override
-                    public int getCount() {
-                        return renderer.getPageCount();
-                    }
-
-                    @Override
-                    public boolean isViewFromObject(View view, Object object) {
-                        return view.equals(object);
-                    }
-
-                    @Override
-                    public Object instantiateItem(ViewGroup container, int position) {
-                        ImageView imageView = (ImageView) pager.findViewById(R.id.main_image_view);
-                        try (PdfRendererCompat.Page page = renderer.openPage(position)) {
-                            Bitmap out = Bitmap.createBitmap(page.getWidth(),page.getHeight(),Bitmap.Config.ARGB_8888);
-                            page.render(out,null,new Matrix(),PdfRendererCompat.Page.RENDER_MODE_FOR_DISPLAY);
-                            imageView.setImageBitmap(out);
-                        }
-                        return pager;
-                    }
-
-                    @Override
-                    public void destroyItem(ViewGroup container, int position, Object object) {
-                        container.removeView((View)object);
-                    }
-                });
+                ImageView imageView = (ImageView) findViewById(R.id.main_image_view);
+                try (PdfRendererCompat.Page page = renderer.openPage(1)) {
+                    Bitmap out = Bitmap.createBitmap(page.getWidth(),page.getHeight(),Bitmap.Config.ARGB_8888);
+                    page.render(out,null,new Matrix(),PdfRendererCompat.Page.RENDER_MODE_FOR_DISPLAY);
+                    imageView.setImageBitmap(out);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

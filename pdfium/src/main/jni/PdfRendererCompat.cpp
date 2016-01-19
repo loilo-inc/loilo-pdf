@@ -212,17 +212,14 @@ static void renderPageBitmap(FPDF_BITMAP bitmap, FPDF_PAGE page, int destLeft, i
 
     CFX_AffineMatrix matrix;
     if (!transform) {
-        pPage->GetDisplayMatrix(matrix, destLeft, destTop, destRight - destLeft,
-                                destBottom - destTop, 0);
+      pPage->GetDisplayMatrix(matrix, destLeft, destTop, destRight - destLeft, destBottom - destTop, 0);
     } else {
-        // PDF's coordinate system origin is left-bottom while
-        // in graphics it is the top-left, so remap the origin.
-        matrix.Set(1, 0, 0, -1, 0, pPage->GetPageHeight());
-        matrix.Concat(
-                transform[0], transform[3],
-                transform[1], transform[4],
-                transform[2], transform[5]
-        );
+      pPage->GetDisplayMatrix(matrix, 0, 0, pPage->GetPageWidth(), pPage->GetPageHeight(), 0);
+      matrix.Concat(
+              transform[0], transform[3],
+              transform[1], transform[4],
+              transform[2], transform[5]
+      );
     }
     pageContext->AppendObjectList(pPage, &matrix);
 
