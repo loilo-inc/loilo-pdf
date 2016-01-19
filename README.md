@@ -1,6 +1,6 @@
 # PdfRendererCompat
 
-An Open Source PDF Rendering Library for Android based on `Pdfium` @ [AOSP](https://source.android.com/).
+An Open Source PDF Rendering Library for Android based on [pdfium](https://android.googlesource.com/platform/external/pdfium/) @ [AOSP](https://source.android.com/).
 This library was developed because of need for compatibility of `PdfRenderer` class with previous version of android.
 
 # Compatibility
