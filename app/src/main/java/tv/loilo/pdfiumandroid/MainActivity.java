@@ -4,9 +4,13 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import java.io.BufferedInputStream;
@@ -20,20 +24,19 @@ import tv.loilo.pdfium.PdfRendererCompat;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ImageView imageView;
-
+    private ViewPager pager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        imageView = (ImageView)findViewById(R.id.main_image_view);
+        pager = (ViewPager) findViewById(R.id.pager);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        File tmp = new File(getCacheDir(),"manual.pdf");
-        try(InputStream ins = getAssets().open("manual.pdf");
+        File tmp = new File(getCacheDir(),"rotation.pdf");
+        try(InputStream ins = getAssets().open("rotation.pdf");
             BufferedInputStream bis = new BufferedInputStream(ins);
             FileOutputStream bos = new FileOutputStream(tmp);
             BufferedOutputStream bfw = new BufferedOutputStream(bos)
@@ -48,22 +51,40 @@ public class MainActivity extends AppCompatActivity {
             }
             bfw.flush();
             try (ParcelFileDescriptor fd = ParcelFileDescriptor.open(tmp,ParcelFileDescriptor.MODE_READ_ONLY);
-                 PdfRendererCompat renderer = new PdfRendererCompat(fd);
-                 PdfRendererCompat.Page page1 = renderer.openPage(1)
+                 final PdfRendererCompat renderer = new PdfRendererCompat(fd);
             ) {
-                assert renderer.getPageCount() == 38;
-                Bitmap out = Bitmap.createBitmap(page1.getWidth(), page1.getHeight(), Bitmap.Config.ARGB_8888);
-                Matrix x2 = new Matrix();
-                x2.setScale(2,2);
-                page1.render(out, null, x2, PdfRendererCompat.Page.RENDER_MODE_FOR_DISPLAY);
-                imageView.setImageBitmap(out);
+                pager.setAdapter(new PagerAdapter() {
+                    @Override
+                    public int getCount() {
+                        return renderer.getPageCount();
+                    }
+
+                    @Override
+                    public boolean isViewFromObject(View view, Object object) {
+                        return view.equals(object);
+                    }
+
+                    @Override
+                    public Object instantiateItem(ViewGroup container, int position) {
+                        ImageView imageView = (ImageView) pager.findViewById(R.id.main_image_view);
+                        try (PdfRendererCompat.Page page = renderer.openPage(position)) {
+                            Bitmap out = Bitmap.createBitmap(page.getWidth(),page.getHeight(),Bitmap.Config.ARGB_8888);
+                            page.render(out,null,new Matrix(),PdfRendererCompat.Page.RENDER_MODE_FOR_DISPLAY);
+                            imageView.setImageBitmap(out);
+                        }
+                        return pager;
+                    }
+
+                    @Override
+                    public void destroyItem(ViewGroup container, int position, Object object) {
+                        container.removeView((View)object);
+                    }
+                });
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

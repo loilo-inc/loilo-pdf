@@ -21,14 +21,8 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.os.ParcelFileDescriptor;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * <p>
@@ -44,7 +38,7 @@ import java.lang.annotation.RetentionPolicy;
  * <p>
  * A typical use of the APIs to render a PDF looks like this:
  * </p>
- * <pre>
+ * <pre>{@code
  * // create a new renderer
  * PdfRendererCompat renderer = new PdfRendererCompat(getSeekableFileDescriptor());
  *
@@ -64,6 +58,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  * // close the renderer
  * renderer.close();
+ * }
  * </pre>
  *
  * <h3>Print preview and print output</h3>
@@ -108,14 +103,6 @@ public final class PdfRendererCompat implements AutoCloseable {
 
     private Page mCurrentPage;
 
-    /** @hide */
-    @IntDef({
-            Page.RENDER_MODE_FOR_DISPLAY,
-            Page.RENDER_MODE_FOR_PRINT
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface RenderMode {}
-
     /**
      * Creates a new instance.
      * <p>
@@ -133,7 +120,7 @@ public final class PdfRendererCompat implements AutoCloseable {
      * @throws java.lang.SecurityException If the file requires a password or
      *         the security scheme is not supported.
      */
-    public PdfRendererCompat(@NonNull ParcelFileDescriptor input) throws IOException {
+    public PdfRendererCompat(ParcelFileDescriptor input) throws IOException {
         if (input == null) {
             throw new NullPointerException("input cannot be null");
         }
@@ -354,8 +341,8 @@ public final class PdfRendererCompat implements AutoCloseable {
          * @see #RENDER_MODE_FOR_DISPLAY
          * @see #RENDER_MODE_FOR_PRINT
          */
-        public void render(@NonNull Bitmap destination, @Nullable Rect destClip,
-                           @Nullable Matrix transform, @RenderMode int renderMode) {
+        public void render(Bitmap destination, Rect destClip,
+                           Matrix transform, int renderMode) {
             if (destination.getConfig() != Bitmap.Config.ARGB_8888) {
                 throw new IllegalArgumentException("Unsupported pixel format");
             }

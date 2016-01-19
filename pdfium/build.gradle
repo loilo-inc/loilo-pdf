@@ -33,7 +33,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile "com.android.support:support-annotations:23.1.1"
 
     androidTestCompile 'com.android.support.test:runner:0.4'
     // Set this dependency to use JUnit 4 rules
@@ -65,3 +64,5 @@ task ndkBuild (type: Exec, description: 'Compile JNI source via NDK') {
     }
     commandLine ndkBuildPath, '-j4', '-C', file('src/main/jni').absolutePath
 }
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
