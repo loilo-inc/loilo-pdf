@@ -15,7 +15,11 @@ to add some multi-platform flexibility to the INLINE and SIZEOF_SIZE_T macros.
 These have been cherry picked from upstream and will be included in the 1.5
 release.
 
-(3) simd/jsimdext.inc
+(3) Security fix
+
+Cherry picked from upstream to address b/27494207.
+
+(4) simd/jsimdext.inc
 
 The modification enables us to compile x86 SIMD.
 
