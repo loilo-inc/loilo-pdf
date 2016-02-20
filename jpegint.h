@@ -5,9 +5,10 @@
  * Copyright (C) 1991-1997, Thomas G. Lane.
  * Modified 1997-2009 by Guido Vollbeding.
  * libjpeg-turbo Modifications:
- * It was modified by The libjpeg-turbo Project to include only code relevant
- * to libjpeg-turbo.
- * For conditions of distribution and use, see the accompanying README file.
+ * Copyright (C) 2015-2016, D. R. Commander
+ * Copyright (C) 2015, Google, Inc.
+ * For conditions of distribution and use, see the accompanying README.ijg
+ * file.
  *
  * This file provides common declarations for the various JPEG modules.
  * These declarations are considered internal to the JPEG library; most
@@ -150,6 +151,13 @@ struct jpeg_decomp_master {
 
   /* State variables made visible to other modules */
   boolean is_dummy_pass;        /* True during 1st pass for 2-pass quant */
+
+  /* Partial decompression variables */
+  JDIMENSION first_iMCU_col;
+  JDIMENSION last_iMCU_col;
+  JDIMENSION first_MCU_col[MAX_COMPS_IN_SCAN];
+  JDIMENSION last_MCU_col[MAX_COMPS_IN_SCAN];
+  boolean jinit_upsampler_no_alloc;
 };
 
 /* Input control module */

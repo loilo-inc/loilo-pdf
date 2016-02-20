@@ -13,15 +13,7 @@ to add some multi-platform flexibility to the INLINE and SIZEOF_SIZE_T macros.
 (2) Partial decoding optimizations
 
 These have been cherry picked from upstream and will be included in the 1.5
-release.  The cherry picked commits are:
-90c92ed5bf98bda381fcc369f0da46837dbb8894
-fc235cfdabbcd1c915fa3a87a56d73727da2eaeb
-9bafc6a7ffa62ed7109314cbb66085075cd1c334
-3fb56e969c890e6aa7b044eea7e24751ab6f4e97
-e67a7e37deb26db5ac7da420560d22e1ca7ea4b4
-f8a1775eab51fb0a83e82343d2eae8cf52b16124
-15884f48eb1a4acd9c6c24291db974c596e71934
-ac30a1bf12751bd82e56158eb9456a28d9c086f3
+release.
 
 (3) simd/jsimdext.inc
 
