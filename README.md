@@ -43,7 +43,7 @@ repositories {
 }
 
 dependencies {
-  compile 'tv.loilo.pdfium:compat:0.1.2-SNAPSHOT'
+  compile 'tv.loilo.pdf:pdfcompat:0.2.0-SNAPSHOT'
 }
 
 ```

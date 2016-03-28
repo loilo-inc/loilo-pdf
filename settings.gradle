@@ -1,1 +1,1 @@
-include ':app', ':pdfium'
+include ':app', ':lib'
