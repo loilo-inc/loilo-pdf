@@ -161,10 +161,16 @@ FX_DWORD CFPF_SkiaFont::GetFontData(FX_DWORD dwTable, FX_LPBYTE pBuffer, FX_DWOR
     if (!m_Face) {
         return FALSE;
     }
-    if (FXFT_Load_Sfnt_Table(m_Face, dwTable, 0, pBuffer, (unsigned long*)&dwSize)) {
+//https://bugs.chromium.org/p/pdfium/issues/detail?id=87
+//    if (FXFT_Load_Sfnt_Table(m_Face, dwTable, 0, pBuffer, (unsigned long*)&dwSize)) {
+//        return 0;
+//    }
+//	return dwSize;
+    unsigned long lSize = dwSize;
+    if (FXFT_Load_Sfnt_Table(m_Face, dwTable, 0, pBuffer, &lSize)) {
         return 0;
     }
-    return dwSize;
+    return (FX_DWORD)lSize;
 }
 FX_BOOL CFPF_SkiaFont::InitFont(CFPF_SkiaFontMgr *pFontMgr, CFPF_SkiaFontDescriptor *pFontDes, FX_BSTR bsFamily, FX_DWORD dwStyle, FX_BYTE uCharset)
 {
