@@ -1,15 +1,15 @@
-# PdfRendererCompat
+# loilo-pdf
 
 An Open Source PDF Rendering Library for Android based on [pdfium](https://android.googlesource.com/platform/external/pdfium/) @ [AOSP](https://source.android.com/).
 This library was developed because of need for compatibility of `PdfRenderer` class with previous version of android.
 
-# Compatibility
+## Compatibility
 
-Currently >= 4.4 (API Level 19), and working for >= API Level 12.
+Currently >= 4.4 (API Level 19)
 
-# Usage
+## Usage
 
-This library is fully compatible with PdfRenderer class which is available from Android 5.0 (LoLiPop).
+This library is fully compatible with PdfRenderer class which is available from Android 5.0 (lollipop).
 
 ```java
 // pdf file
@@ -29,7 +29,7 @@ try (ParcelFileDescriptor fd = ParcelFileDescriptor.open(file,ParcelFileDescript
 
 ```
 
-# Install
+## Install
 
 PdfRenderer is available on Marven Central.
 
@@ -43,15 +43,15 @@ repositories {
 }
 
 dependencies {
-  compile 'tv.loilo.pdfium:compat:0.1.2-SNAPSHOT'
+  compile 'tv.loilo.pdf:pdfcompat:0.2.1-SNAPSHOT'
 }
 
 ```
 
-# Original Pdfium Library
+## Original Pdfium Library
 
 This library is forked from original pdfium library in AOSP, version of 5.0.0-r1.
 
-# LICENSE
+## LICENSE
 
 Apache License Version 2.0
