@@ -11,7 +11,7 @@ add_library( pdfium
 
 set_target_properties( pdfium
                        PROPERTIES IMPORTED_LOCATION
-                       ${CMAKE_SOURCE_DIR}/external/pdfium/fpdfsdk/libs/${ANDROID_ABI}/libpdfium.so )
+                       ${CMAKE_CURRENT_SOURCE_DIR}/external/pdfium/fpdfsdk/libs/${ANDROID_ABI}/libpdfium.so )
 
 add_library( loilopdf
              SHARED
@@ -31,3 +31,8 @@ include_directories(./external/pdfium/core/include)
 include_directories(./external/pdfium/fpdfsdk/include)
 include_directories(./external/utils)
 include_directories(./include)
+
+add_custom_command(TARGET loilopdf POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_CURRENT_SOURCE_DIR}/external/pdfium/fpdfsdk/libs/${ANDROID_ABI}/libpdfium.so
+        ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libpdfium.so)
