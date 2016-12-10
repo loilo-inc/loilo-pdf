@@ -1,5 +1,3 @@
-package tv.loilo.pdf;
-
 /*
  * Copyright 2014 The Android Open Source Project,
  *
@@ -16,6 +14,7 @@ package tv.loilo.pdf;
  * limitations under the License.
  *
  */
+package tv.loilo.pdf;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;

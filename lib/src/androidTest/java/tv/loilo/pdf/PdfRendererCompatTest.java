@@ -5,16 +5,16 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.junit.Assert.*;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+
 @RunWith(AndroidJUnit4.class)
-@SmallTest
 public class PdfRendererCompatTest {
 
     private Context getContext() {
