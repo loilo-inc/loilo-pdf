@@ -22,11 +22,6 @@ public class PdfRendererCompatTest {
     }
 
     @Test
-    public void testAssert() {
-        assertEquals(0, 0);
-    }
-
-    @Test
     public void testOpenPage() throws IOException, IllegalAccessException {
         AssetManager assets = getContext().getAssets();
         for (String file : assets.list(".")) {
@@ -34,10 +29,11 @@ public class PdfRendererCompatTest {
                  PdfRendererCompat renderer = new PdfRendererCompat(fd.getParcelFileDescriptor())
             ) {
                 for (int i = 0; i < renderer.getPageCount(); i++) {
-                    PdfRendererCompat.Page page = renderer.openPage(i);
-                    assertNotSame(0, page.getWidth());
-                    assertNotSame(0, page.getHeight());
-                    assertEquals(i, page.getIndex());
+                    try(PdfRendererCompat.Page page = renderer.openPage(i)) {
+                        assertNotSame(0, page.getWidth());
+                        assertNotSame(0, page.getHeight());
+                        assertEquals(i, page.getIndex());
+                    }
                 }
             }
         }
