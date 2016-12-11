@@ -36,14 +36,8 @@ PdfRenderer is available on Marven Central.
 via Gradle
 
 ```
-repositories {
-    maven {
-        url 'http://oss.sonatype.org/content/repositories/snapshots'
-    }
-}
-
 dependencies {
-  compile 'tv.loilo.pdf:pdfcompat:0.2.1-SNAPSHOT'
+  compile 'tv.loilo.pdf:pdfcompat:1.0.0'
 }
 
 ```
