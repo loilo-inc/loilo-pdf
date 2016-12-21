@@ -5,25 +5,20 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.junit.Assert.*;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+
 @RunWith(AndroidJUnit4.class)
-@SmallTest
 public class PdfRendererCompatTest {
 
     private Context getContext() {
         return InstrumentationRegistry.getContext();
-    }
-
-    @Test
-    public void testAssert() {
-        assertEquals(0, 0);
     }
 
     @Test
@@ -34,10 +29,11 @@ public class PdfRendererCompatTest {
                  PdfRendererCompat renderer = new PdfRendererCompat(fd.getParcelFileDescriptor())
             ) {
                 for (int i = 0; i < renderer.getPageCount(); i++) {
-                    PdfRendererCompat.Page page = renderer.openPage(i);
-                    assertNotSame(0, page.getWidth());
-                    assertNotSame(0, page.getHeight());
-                    assertEquals(i, page.getIndex());
+                    try(PdfRendererCompat.Page page = renderer.openPage(i)) {
+                        assertNotSame(0, page.getWidth());
+                        assertNotSame(0, page.getHeight());
+                        assertEquals(i, page.getIndex());
+                    }
                 }
             }
         }

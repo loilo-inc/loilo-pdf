@@ -1,5 +1,3 @@
-package tv.loilo.pdf;
-
 /*
  * Copyright 2014 The Android Open Source Project,
  *
@@ -16,6 +14,7 @@ package tv.loilo.pdf;
  * limitations under the License.
  *
  */
+package tv.loilo.pdf;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -89,7 +88,6 @@ import java.io.IOException;
  * @see #close()
  */
 public final class PdfRendererCompat implements AutoCloseable {
-//    private final CloseGuard mCloseGuard = CloseGuard.get();
 
     /* load our native library */
     static {
@@ -132,17 +130,9 @@ public final class PdfRendererCompat implements AutoCloseable {
             throw new IllegalArgumentException("input is not file");
         }
 
-//        try {
-//            Os.lseek(input.getFileDescriptor(), 0, OsConstants.SEEK_SET);
-//            size = Os.fstat(input.getFileDescriptor()).st_size;
-//        } catch (ErrnoException ee) {
-//            throw new IllegalArgumentException("file descriptor not seekable");
-//        }
-
         mInput = input;
         mNativeDocument = nativeCreate(mInput.getFd(), size);
         mPageCount = nativeGetPageCount(mNativeDocument);
-//        mCloseGuard.open("close");
     }
 
     private static native long nativeCreate(int fd, long size);
@@ -212,27 +202,29 @@ public final class PdfRendererCompat implements AutoCloseable {
     @Override
     protected void finalize() throws Throwable {
         try {
-//            mCloseGuard.warnIfOpen();
-            if (mInput != null) {
-                doClose();
-            }
-        } finally {
-            super.finalize();
+            doClose();
+        } catch (Throwable ignored) {
+            ignored.printStackTrace();
         }
+
+        super.finalize();
     }
 
     private void doClose() {
         if (mCurrentPage != null) {
             mCurrentPage.close();
+            mCurrentPage = null;
         }
-        nativeClose(mNativeDocument);
-        try {
-            mInput.close();
-        } catch (IOException ioe) {
-            /* ignore - best effort */
+
+        if (mInput != null) {
+            nativeClose(mNativeDocument);
+            try {
+                mInput.close();
+            } catch (IOException ignored) {
+                ignored.printStackTrace();
+            }
+            mInput = null;
         }
-        mInput = null;
-//        mCloseGuard.close();
     }
 
     private void throwIfClosed() {
@@ -258,8 +250,6 @@ public final class PdfRendererCompat implements AutoCloseable {
      */
     public final class Page implements AutoCloseable {
 
-//        private final CloseGuard mCloseGuard = CloseGuard.get();
-
         /**
          * Mode to render the content for display on a screen.
          */
@@ -281,7 +271,6 @@ public final class PdfRendererCompat implements AutoCloseable {
             mIndex = index;
             mWidth = (int) mTempPoint[0];
             mHeight = (int) mTempPoint[1];
-//            mCloseGuard.open("close")/;
         }
 
         /**
@@ -411,20 +400,22 @@ public final class PdfRendererCompat implements AutoCloseable {
         @Override
         protected void finalize() throws Throwable {
             try {
-//                mCloseGuard.warnIfOpen();
-                if (mNativePage != 0) {
-                    doClose();
-                }
-            } finally {
-                super.finalize();
+                doClose();
+            } catch (Throwable ignored) {
+                ignored.printStackTrace();
             }
+
+            super.finalize();
         }
 
         private void doClose() {
-            nativeClosePage(mNativePage);
-            mNativePage = 0;
-//            mCloseGuard.close();
-            mCurrentPage = null;
+            if (mNativePage != 0) {
+                nativeClosePage(mNativePage);
+                mNativePage = 0;
+            }
+            if (mCurrentPage == this) {
+                mCurrentPage = null;
+            }
         }
 
         private void throwIfClosed() {
