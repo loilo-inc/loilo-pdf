@@ -7,5 +7,6 @@
 /build
 /captures
 **/objs/
+**/obj/
 *.tmp
 *.iml
