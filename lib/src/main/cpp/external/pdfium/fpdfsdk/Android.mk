@@ -22,7 +22,7 @@ LOCAL_CFLAGS += -DFOXIT_CHROME_BUILD
 LOCAL_STATIC_LIBRARIES := libpdfiumcore
 
 # TODO: figure out why turning on exceptions requires manually linking libdl
-LOCAL_SHARED_LIBRARIES := libdl
+#LOCAL_SHARED_LIBRARIES := libdl
 
 LOCAL_SRC_FILES := \
     src/fpdf_dataavail.cpp \

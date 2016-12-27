@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.4.1)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wno-format-security")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fexceptions -frtti -Werror -Wno-format-security")
-
 set(loilopdf_SRCS src/PdfRendererCompat.cpp )
 
 add_library( pdfium

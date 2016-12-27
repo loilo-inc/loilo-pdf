@@ -40,7 +40,7 @@ git clone https://android.googlesource.com/platform/external/pdfium
 
   * ndk-build実行
     ```
-    ndk-build NDK_PROJECT_PATH=./core APP_BUILD_SCRIPT=./core/Android.mk APP_OPTIM=release APP_PLATFORM=android-19 APP_STL=gnustl_static APP_ABI="armeabi armeabi-v7a arm64-v8a x86 x86_64"
+    ndk-build -B APP_PROJECT_PATH=./core APP_BUILD_SCRIPT=./core/Android.mk APP_OPTIM=release APP_PLATFORM=android-19 APP_STL=gnustl_static APP_ABI="armeabi armeabi-v7a arm64-v8a x86 x86_64"
     ```
 
 * libpdfiumをビルド
@@ -101,5 +101,5 @@ git clone https://android.googlesource.com/platform/external/pdfium
 
   * ndk-build実行
     ```
-    ndk-build NDK_PROJECT_PATH=./fpdfsdk APP_BUILD_SCRIPT=./fpdfsdk/Android.mk APP_OPTIM=release APP_PLATFORM=android-19 APP_STL=gnustl_static APP_ABI="armeabi armeabi-v7a arm64-v8a x86 x86_64"
+    ndk-build -B APP_PROJECT_PATH=./fpdfsdk APP_BUILD_SCRIPT=./fpdfsdk/Android.mk APP_OPTIM=release APP_PLATFORM=android-19 APP_STL=gnustl_static APP_ABI="armeabi armeabi-v7a arm64-v8a x86 x86_64"
     ```
