@@ -33,13 +33,24 @@ try (ParcelFileDescriptor fd = ParcelFileDescriptor.open(file,ParcelFileDescript
 
 PdfRenderer is available on Marven Central.
 
+!! Sorry, v1.0.0 contains a critical bug. Use previous version.
+
 via Gradle
 
 ```
-dependencies {
-  compile 'tv.loilo.pdf:pdfcompat:1.0.0'
-}
+~~dependencies {~~
+~~compile 'tv.loilo.pdf:pdfcompat:1.0.0'~~
+~~}~~
 
+repositories {
+  maven {
+    url 'http://oss.sonatype.org/content/repositories/snapshots'
+  }		
+}
+		
+dependencies {
+  compile 'tv.loilo.pdf:pdfcompat:0.2.1-SNAPSHOT'
+}
 ```
 
 ## Original Pdfium Library
