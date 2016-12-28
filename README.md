@@ -33,13 +33,13 @@ try (ParcelFileDescriptor fd = ParcelFileDescriptor.open(file,ParcelFileDescript
 
 PdfRenderer is available on Marven Central.
 
-!! Sorry, v1.0.0 contains a critical bug. Use previous version.
+**!! Sorry, v1.0.0 contains a critical bug. Use previous version.**
 
 via Gradle
 
 ```
 ~~dependencies {~~
-~~compile 'tv.loilo.pdf:pdfcompat:1.0.0'~~
+~~  compile 'tv.loilo.pdf:pdfcompat:1.0.0'~~
 ~~}~~
 
 repositories {
