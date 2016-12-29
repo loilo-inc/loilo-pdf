@@ -1,42 +1,50 @@
 // Copyright 2014 PDFium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
- 
+
 // Original code copyright 2014 Foxit Software Inc. http://www.foxitsoftware.com
 
-#ifndef _JBIG2_HUFFMAN_TABLE_H_
-#define _JBIG2_HUFFMAN_TABLE_H_
-#include "JBig2_Module.h"
-#include "JBig2_HuffmanTable_Standard.h"
-#include "JBig2_BitStream.h"
-class CJBig2_HuffmanTable : public CJBig2_Object
-{
-public:
+#ifndef CORE_SRC_FXCODEC_JBIG2_JBIG2_HUFFMANTABLE_H_
+#define CORE_SRC_FXCODEC_JBIG2_JBIG2_HUFFMANTABLE_H_
 
-    CJBig2_HuffmanTable(const JBig2TableLine *pTable, int nLines, FX_BOOL bHTOOB);
+#include <vector>
 
-    CJBig2_HuffmanTable(CJBig2_BitStream *pStream);
+#include "core/include/fxcrt/fx_system.h"
 
-    ~CJBig2_HuffmanTable();
+class CJBig2_BitStream;
+struct JBig2TableLine;
 
-    void init();
+class CJBig2_HuffmanTable {
+ public:
+  CJBig2_HuffmanTable(const JBig2TableLine* pTable,
+                      FX_DWORD nLines,
+                      bool bHTOOB);
 
-    int parseFromStandardTable(const JBig2TableLine *pTable, int nLines, FX_BOOL bHTOOB);
+  explicit CJBig2_HuffmanTable(CJBig2_BitStream* pStream);
 
-    int parseFromCodedBuffer(CJBig2_BitStream *pStream);
+  ~CJBig2_HuffmanTable();
 
-    FX_BOOL isOK()
-    {
-        return m_bOK;
-    }
-private:
-    FX_BOOL HTOOB;
-    int NTEMP;
-    int *CODES;
-    int *PREFLEN;
-    int *RANGELEN;
-    int *RANGELOW;
-    FX_BOOL m_bOK;
-    friend class CJBig2_HuffmanDecoder;
+  bool IsHTOOB() const { return HTOOB; }
+  FX_DWORD Size() const { return NTEMP; }
+  const std::vector<int>& GetCODES() const { return CODES; }
+  const std::vector<int>& GetPREFLEN() const { return PREFLEN; }
+  const std::vector<int>& GetRANGELEN() const { return RANGELEN; }
+  const std::vector<int>& GetRANGELOW() const { return RANGELOW; }
+  bool IsOK() const { return m_bOK; }
+
+ private:
+  void ParseFromStandardTable(const JBig2TableLine* pTable);
+  bool ParseFromCodedBuffer(CJBig2_BitStream* pStream);
+  void InitCodes();
+  void ExtendBuffers(bool increment);
+
+  bool m_bOK;
+  bool HTOOB;
+  FX_DWORD NTEMP;
+  std::vector<int> CODES;
+  std::vector<int> PREFLEN;
+  std::vector<int> RANGELEN;
+  std::vector<int> RANGELOW;
 };
-#endif
+
+#endif  // CORE_SRC_FXCODEC_JBIG2_JBIG2_HUFFMANTABLE_H_

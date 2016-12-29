@@ -1,171 +1,181 @@
 // Copyright 2014 PDFium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
- 
+
 // Original code copyright 2014 Foxit Software Inc. http://www.foxitsoftware.com
 
-#ifndef _PWL_EDITCTRL_H_
-#define _PWL_EDITCTRL_H_
+#ifndef FPDFSDK_INCLUDE_PDFWINDOW_PWL_EDITCTRL_H_
+#define FPDFSDK_INCLUDE_PDFWINDOW_PWL_EDITCTRL_H_
 
-enum PWL_EDIT_ALIGNFORMAT_H
-{
-	PEAH_LEFT = 0,
-	PEAH_MIDDLE,
-	PEAH_RIGHT
-};
+#include "PWL_Wnd.h"
+#include "core/include/fxcrt/fx_string.h"
+#include "fpdfsdk/include/fxedit/fx_edit.h"
 
-enum PWL_EDIT_ALIGNFORMAT_V
-{
-	PEAV_TOP = 0,	
-	PEAV_CENTER,
-	PEAV_BOTTOM
-};
-
-class IPWL_Edit_Notify;
-class CPWL_EditCtrl;
 class CPWL_Caret;
-class IFX_Edit;
 class CPWL_Edit;
+class CPWL_EditCtrl;
+class IFX_Edit;
+class IPWL_Edit_Notify;
+struct CPVT_WordPlace;
 
-class IPWL_Edit_Notify
-{
-public:
-	//when the position of caret is changed in edit
-	virtual void					OnCaretMove(FX_INT32 x1, FX_INT32 y1, FX_INT32 x2, FX_INT32 y2) {}
-	virtual void					OnContentChange(const CPDF_Rect& rcContent){}
-	//OprType: 0 InsertWord
-	//1 InsertReturn
-	//2 BackSpace
-	//3 Delete
-	//4 Clear
-	//5 InsertText
-	//6 SetText
-	virtual void					OnInsertWord(const CPVT_WordPlace& place, const CPVT_WordPlace& oldplace){}
-	virtual void					OnInsertReturn(const CPVT_WordPlace& place, const CPVT_WordPlace& oldplace){}
-	virtual void					OnBackSpace(const CPVT_WordPlace& place, const CPVT_WordPlace& oldplace){}
-	virtual void					OnDelete(const CPVT_WordPlace& place, const CPVT_WordPlace& oldplace){}
-	virtual void					OnClear(const CPVT_WordPlace& place, const CPVT_WordPlace& oldplace){}
-	virtual void					OnInsertText(const CPVT_WordPlace& place, const CPVT_WordPlace& oldplace){}
-	virtual void					OnSetText(const CPVT_WordPlace& place, const CPVT_WordPlace& oldplace){}
-	virtual void					OnAddUndo(CPWL_Edit* pEdit) {}
+enum PWL_EDIT_ALIGNFORMAT_H { PEAH_LEFT = 0, PEAH_MIDDLE, PEAH_RIGHT };
+
+enum PWL_EDIT_ALIGNFORMAT_V { PEAV_TOP = 0, PEAV_CENTER, PEAV_BOTTOM };
+
+class IPWL_Edit_Notify {
+ public:
+  virtual ~IPWL_Edit_Notify() {}
+  // when the position of caret is changed in edit
+  virtual void OnCaretMove(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {}
+  virtual void OnContentChange(const CPDF_Rect& rcContent) {}
+  // OprType: 0 InsertWord
+  // 1 InsertReturn
+  // 2 BackSpace
+  // 3 Delete
+  // 4 Clear
+  // 5 InsertText
+  // 6 SetText
+  virtual void OnInsertWord(const CPVT_WordPlace& place,
+                            const CPVT_WordPlace& oldplace) {}
+  virtual void OnInsertReturn(const CPVT_WordPlace& place,
+                              const CPVT_WordPlace& oldplace) {}
+  virtual void OnBackSpace(const CPVT_WordPlace& place,
+                           const CPVT_WordPlace& oldplace) {}
+  virtual void OnDelete(const CPVT_WordPlace& place,
+                        const CPVT_WordPlace& oldplace) {}
+  virtual void OnClear(const CPVT_WordPlace& place,
+                       const CPVT_WordPlace& oldplace) {}
+  virtual void OnInsertText(const CPVT_WordPlace& place,
+                            const CPVT_WordPlace& oldplace) {}
+  virtual void OnSetText(const CPVT_WordPlace& place,
+                         const CPVT_WordPlace& oldplace) {}
+  virtual void OnAddUndo(CPWL_Edit* pEdit) {}
 };
 
-class PWL_CLASS CPWL_EditCtrl : public CPWL_Wnd, public IFX_Edit_Notify
-{
-	friend class CPWL_Edit_Notify;
+class CPWL_EditCtrl : public CPWL_Wnd, public IFX_Edit_Notify {
+  friend class CPWL_Edit_Notify;
 
-public:
-	CPWL_EditCtrl();
-	virtual ~CPWL_EditCtrl();
+ public:
+  CPWL_EditCtrl();
+  ~CPWL_EditCtrl() override;
 
-public:
-	virtual void					OnCreate(PWL_CREATEPARAM & cp);
-	virtual void					OnCreated();
+  CPDF_Rect GetContentRect() const;
+  void GetCaretPos(int32_t& x, int32_t& y) const;
 
-	virtual FX_BOOL					OnKeyDown(FX_WORD nChar, FX_DWORD nFlag);
-	virtual FX_BOOL					OnChar(FX_WORD nChar, FX_DWORD nFlag);
-	virtual FX_BOOL					OnLButtonDown(const CPDF_Point & point, FX_DWORD nFlag);	
-	virtual FX_BOOL					OnLButtonUp(const CPDF_Point & point, FX_DWORD nFlag);	
-	virtual FX_BOOL					OnMouseMove(const CPDF_Point & point, FX_DWORD nFlag);
-	virtual void					OnNotify(CPWL_Wnd* pWnd, FX_DWORD msg, FX_INTPTR wParam = 0, FX_INTPTR lParam = 0);
+  CFX_WideString GetText() const;
+  void SetSel(int32_t nStartChar, int32_t nEndChar);
+  void GetSel(int32_t& nStartChar, int32_t& nEndChar) const;
+  void GetTextRange(const CPDF_Rect& rect,
+                    int32_t& nStartChar,
+                    int32_t& nEndChar) const;
+  CFX_WideString GetText(int32_t& nStartChar, int32_t& nEndChar) const;
+  void Clear();
+  void SelectAll();
 
-	virtual void					CreateChildWnd(const PWL_CREATEPARAM & cp);
-	virtual void					RePosChildWnd();	
-	virtual void					SetFontSize(FX_FLOAT fFontSize);
-	virtual FX_FLOAT				GetFontSize() const;
-	
-public:
-	virtual void					SetText(FX_LPCWSTR csText);
+  int32_t GetCaret() const;
+  void SetCaret(int32_t nPos);
+  int32_t GetTotalWords() const;
 
-	virtual void					CopyText();
-	virtual void					PasteText();
-	virtual void 					CutText();
+  void Paint();
 
-	CPDF_Rect						GetContentRect() const;
-	void							GetCaretPos(FX_INT32& x, FX_INT32& y) const;
-	FX_BOOL							IsModified() const;
+  void EnableRefresh(FX_BOOL bRefresh);
+  CPDF_Point GetScrollPos() const;
+  void SetScrollPos(const CPDF_Point& point);
 
-	CFX_WideString					GetText() const;
-	void							SetSel(FX_INT32 nStartChar,FX_INT32 nEndChar);
-	void							GetSel(FX_INT32 & nStartChar, FX_INT32 & nEndChar ) const;
-	void							GetTextRange(const CPDF_Rect& rect, FX_INT32 & nStartChar, FX_INT32 & nEndChar) const;
-	CFX_WideString					GetText(FX_INT32 & nStartChar, FX_INT32 & nEndChar) const;
-	void							Clear();
-	void							SelectAll();
+  void SetEditNotify(IPWL_Edit_Notify* pNotify) { m_pEditNotify = pNotify; }
 
-	FX_INT32						GetCaret() const;
-	void							SetCaret(FX_INT32 nPos);
-	FX_INT32						GetTotalWords() const;
+  void SetCharSet(uint8_t nCharSet) { m_nCharSet = nCharSet; }
+  int32_t GetCharSet() const;
 
-	void							Paint();
+  void SetCodePage(int32_t nCodePage) { m_nCodePage = nCodePage; }
+  int32_t GetCodePage() const { return m_nCodePage; }
 
-	void							EnableRefresh(FX_BOOL bRefresh);	
-	CPDF_Point						GetScrollPos() const;
-	void							SetScrollPos(const CPDF_Point& point);
+  CPDF_Font* GetCaretFont() const;
+  FX_FLOAT GetCaretFontSize() const;
 
-	void							SetEditNotify(IPWL_Edit_Notify* pNotify) {m_pEditNotify = pNotify;}	
+  FX_BOOL CanUndo() const;
+  FX_BOOL CanRedo() const;
+  void Redo();
+  void Undo();
 
-	void							SetCharSet(FX_BYTE nCharSet){m_nCharSet = nCharSet;}
-	FX_INT32						GetCharSet() const;
+  void SetReadyToInput();
 
-	void							SetCodePage(FX_INT32 nCodePage){m_nCodePage = nCodePage;}
-	FX_INT32						GetCodePage() const {return m_nCodePage;}
+  // CPWL_Wnd
+  void OnCreate(PWL_CREATEPARAM& cp) override;
+  void OnCreated() override;
+  FX_BOOL OnKeyDown(FX_WORD nChar, FX_DWORD nFlag) override;
+  FX_BOOL OnChar(FX_WORD nChar, FX_DWORD nFlag) override;
+  FX_BOOL OnLButtonDown(const CPDF_Point& point, FX_DWORD nFlag) override;
+  FX_BOOL OnLButtonUp(const CPDF_Point& point, FX_DWORD nFlag) override;
+  FX_BOOL OnMouseMove(const CPDF_Point& point, FX_DWORD nFlag) override;
+  void OnNotify(CPWL_Wnd* pWnd,
+                FX_DWORD msg,
+                intptr_t wParam = 0,
+                intptr_t lParam = 0) override;
+  void CreateChildWnd(const PWL_CREATEPARAM& cp) override;
+  void RePosChildWnd() override;
+  void SetFontSize(FX_FLOAT fFontSize) override;
+  FX_FLOAT GetFontSize() const override;
+  void SetCursor() override;
 
-	CPDF_Font *						GetCaretFont() const;
-	FX_FLOAT						GetCaretFontSize() const;
+ protected:
+  // IFX_Edit_Notify
+  void IOnSetScrollInfoX(FX_FLOAT fPlateMin,
+                         FX_FLOAT fPlateMax,
+                         FX_FLOAT fContentMin,
+                         FX_FLOAT fContentMax,
+                         FX_FLOAT fSmallStep,
+                         FX_FLOAT fBigStep) override {}
+  void IOnSetScrollInfoY(FX_FLOAT fPlateMin,
+                         FX_FLOAT fPlateMax,
+                         FX_FLOAT fContentMin,
+                         FX_FLOAT fContentMax,
+                         FX_FLOAT fSmallStep,
+                         FX_FLOAT fBigStep) override;
+  void IOnSetScrollPosX(FX_FLOAT fx) override {}
+  void IOnSetScrollPosY(FX_FLOAT fy) override;
+  void IOnSetCaret(FX_BOOL bVisible,
+                   const CPDF_Point& ptHead,
+                   const CPDF_Point& ptFoot,
+                   const CPVT_WordPlace& place) override;
+  void IOnCaretChange(const CPVT_SecProps& secProps,
+                      const CPVT_WordProps& wordProps) override;
+  void IOnContentChange(const CPDF_Rect& rcContent) override;
+  void IOnInvalidateRect(CPDF_Rect* pRect) override;
 
-	FX_BOOL							CanUndo() const;
-	FX_BOOL							CanRedo() const;
-	void							Redo();
-	void							Undo();
+  void InsertText(const FX_WCHAR* csText);
+  void SetText(const FX_WCHAR* csText);
+  void CopyText();
+  void PasteText();
+  void CutText();
+  void ShowVScrollBar(FX_BOOL bShow);
+  void InsertWord(FX_WORD word, int32_t nCharset);
+  void InsertReturn();
 
-	void							SetReadyToInput();
-protected:
-	virtual void					ShowVScrollBar(FX_BOOL bShow);
+  FX_BOOL IsWndHorV();
 
-	virtual void					InsertWord(FX_WORD word, FX_INT32 nCharset);
-	virtual void					InsertReturn();
-	virtual void					InsertText(FX_LPCWSTR csText);
+  void Delete();
+  void Backspace();
 
-	virtual void					SetCursor();
-	FX_BOOL							IsWndHorV();
+  void GetCaretInfo(CPDF_Point& ptHead, CPDF_Point& ptFoot) const;
+  void SetCaret(FX_BOOL bVisible,
+                const CPDF_Point& ptHead,
+                const CPDF_Point& ptFoot);
 
-	void							Delete();
-	void							Backspace();
+  void SetEditCaret(FX_BOOL bVisible);
 
-protected:
-	void							GetCaretInfo(CPDF_Point & ptHead, CPDF_Point & ptFoot) const;
-	void							SetCaret(FX_BOOL bVisible, const CPDF_Point & ptHead, const CPDF_Point & ptFoot);
-	
-	void							SetEditCaret(FX_BOOL bVisible);
+ private:
+  void CreateEditCaret(const PWL_CREATEPARAM& cp);
 
-protected:
-	virtual void					IOnSetScrollInfoX(FX_FLOAT fPlateMin, FX_FLOAT fPlateMax, 
-												FX_FLOAT fContentMin, FX_FLOAT fContentMax, 
-												FX_FLOAT fSmallStep, FX_FLOAT fBigStep){}
-	virtual void					IOnSetScrollInfoY(FX_FLOAT fPlateMin, FX_FLOAT fPlateMax, 
-												FX_FLOAT fContentMin, FX_FLOAT fContentMax, 
-												FX_FLOAT fSmallStep, FX_FLOAT fBigStep);
-	virtual void					IOnSetScrollPosX(FX_FLOAT fx){}
-	virtual void					IOnSetScrollPosY(FX_FLOAT fy);
-	virtual void					IOnSetCaret(FX_BOOL bVisible,const CPDF_Point & ptHead,const CPDF_Point & ptFoot, const CPVT_WordPlace& place);
-	virtual void					IOnCaretChange(const CPVT_SecProps & secProps, const CPVT_WordProps & wordProps);
-	virtual void					IOnContentChange(const CPDF_Rect& rcContent);
-	virtual void					IOnInvalidateRect(CPDF_Rect * pRect);
+ protected:
+  IFX_Edit* m_pEdit;
+  CPWL_Caret* m_pEditCaret;
+  FX_BOOL m_bMouseDown;
+  IPWL_Edit_Notify* m_pEditNotify;
 
-private:
-	void							CreateEditCaret(const PWL_CREATEPARAM & cp);
-
-protected:
-	IFX_Edit*						m_pEdit;
-	CPWL_Caret*						m_pEditCaret;
-	FX_BOOL							m_bMouseDown;
-	IPWL_Edit_Notify*				m_pEditNotify;	
-
-private:
-	FX_INT32						m_nCharSet;
-	FX_INT32						m_nCodePage;
+ private:
+  int32_t m_nCharSet;
+  int32_t m_nCodePage;
 };
 
-#endif
-
+#endif  // FPDFSDK_INCLUDE_PDFWINDOW_PWL_EDITCTRL_H_

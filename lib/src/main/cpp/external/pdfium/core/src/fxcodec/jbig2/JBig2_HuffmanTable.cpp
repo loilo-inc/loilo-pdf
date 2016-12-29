@@ -1,193 +1,137 @@
 // Copyright 2014 PDFium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
- 
+
 // Original code copyright 2014 Foxit Software Inc. http://www.foxitsoftware.com
 
-#include "JBig2_HuffmanTable.h"
-#include "JBig2_BitStream.h"
-#include <string.h>
+#include "core/src/fxcodec/jbig2/JBig2_HuffmanTable.h"
 
-CJBig2_HuffmanTable::CJBig2_HuffmanTable(const JBig2TableLine *pTable, int nLines,
-        FX_BOOL bHTOOB)
-{
-    init();
-    m_bOK = parseFromStandardTable(pTable, nLines, bHTOOB);
-}
+#include <algorithm>
+#include <vector>
 
-CJBig2_HuffmanTable::CJBig2_HuffmanTable(CJBig2_BitStream *pStream)
-{
-    init();
-    m_bOK = parseFromCodedBuffer(pStream);
-}
+#include "core/include/fxcrt/fx_memory.h"
+#include "core/src/fxcodec/jbig2/JBig2_BitStream.h"
+#include "core/src/fxcodec/jbig2/JBig2_Define.h"
+#include "core/src/fxcodec/jbig2/JBig2_HuffmanTable_Standard.h"
 
-CJBig2_HuffmanTable::~CJBig2_HuffmanTable()
-{
-    if(CODES) {
-        m_pModule->JBig2_Free(CODES);
-    }
-    if(PREFLEN) {
-        m_pModule->JBig2_Free(PREFLEN);
-    }
-    if(RANGELEN) {
-        m_pModule->JBig2_Free(RANGELEN);
-    }
-    if(RANGELOW) {
-        m_pModule->JBig2_Free(RANGELOW);
-    }
-}
-void CJBig2_HuffmanTable::init()
-{
-    HTOOB = FALSE;
-    NTEMP = 0;
-    CODES = NULL;
-    PREFLEN = NULL;
-    RANGELEN = NULL;
-    RANGELOW = NULL;
-}
-int CJBig2_HuffmanTable::parseFromStandardTable(const JBig2TableLine *pTable, int nLines, FX_BOOL bHTOOB)
-{
-    int CURLEN, LENMAX, CURCODE, CURTEMP, i;
-    int *LENCOUNT;
-    int *FIRSTCODE;
-    HTOOB = bHTOOB;
-    NTEMP = nLines;
-    CODES = (int*)m_pModule->JBig2_Malloc2(sizeof(int), NTEMP);
-    PREFLEN = (int*)m_pModule->JBig2_Malloc2(sizeof(int), NTEMP);
-    RANGELEN = (int*)m_pModule->JBig2_Malloc2(sizeof(int), NTEMP);
-    RANGELOW = (int*)m_pModule->JBig2_Malloc2(sizeof(int), NTEMP);
-    LENMAX = 0;
-    for(i = 0; i < NTEMP; i++) {
-        PREFLEN[i] = pTable[i].PREFLEN;
-        RANGELEN[i] = pTable[i].RANDELEN;
-        RANGELOW[i] = pTable[i].RANGELOW;
-        if(PREFLEN[i] > LENMAX) {
-            LENMAX = PREFLEN[i];
-        }
-    }
-    LENCOUNT = (int*)m_pModule->JBig2_Malloc2(sizeof(int), (LENMAX + 1));
-    JBIG2_memset(LENCOUNT, 0, sizeof(int) * (LENMAX + 1));
-    FIRSTCODE = (int*)m_pModule->JBig2_Malloc2(sizeof(int), (LENMAX + 1));
-    for(i = 0; i < NTEMP; i++) {
-        LENCOUNT[PREFLEN[i]] ++;
-    }
-    CURLEN = 1;
-    FIRSTCODE[0] = 0;
-    LENCOUNT[0]  = 0;
-    while(CURLEN <= LENMAX) {
-        FIRSTCODE[CURLEN] = (FIRSTCODE[CURLEN - 1] + LENCOUNT[CURLEN - 1]) << 1;
-        CURCODE = FIRSTCODE[CURLEN];
-        CURTEMP = 0;
-        while(CURTEMP < NTEMP) {
-            if(PREFLEN[CURTEMP] == CURLEN) {
-                CODES[CURTEMP] = CURCODE;
-                CURCODE = CURCODE + 1;
-            }
-            CURTEMP = CURTEMP + 1;
-        }
-        CURLEN = CURLEN + 1;
-    }
-    m_pModule->JBig2_Free(LENCOUNT);
-    m_pModule->JBig2_Free(FIRSTCODE);
-    return 1;
+CJBig2_HuffmanTable::CJBig2_HuffmanTable(const JBig2TableLine* pTable,
+                                         FX_DWORD nLines,
+                                         bool bHTOOB)
+    : m_bOK(true), HTOOB(bHTOOB), NTEMP(nLines) {
+  ParseFromStandardTable(pTable);
 }
 
-#define HT_CHECK_MEMORY_ADJUST			\
-    if(NTEMP >= nSize)	\
-    {	\
-        nSize += 16;	\
-        PREFLEN  = (int*)m_pModule->JBig2_Realloc(PREFLEN,sizeof(int)*nSize);	\
-        RANGELEN = (int*)m_pModule->JBig2_Realloc(RANGELEN,sizeof(int)*nSize);	\
-        RANGELOW = (int*)m_pModule->JBig2_Realloc(RANGELOW,sizeof(int)*nSize);	\
+CJBig2_HuffmanTable::CJBig2_HuffmanTable(CJBig2_BitStream* pStream)
+    : HTOOB(false), NTEMP(0) {
+  m_bOK = ParseFromCodedBuffer(pStream);
+}
+
+CJBig2_HuffmanTable::~CJBig2_HuffmanTable() {
+}
+
+void CJBig2_HuffmanTable::ParseFromStandardTable(const JBig2TableLine* pTable) {
+  PREFLEN.resize(NTEMP);
+  RANGELEN.resize(NTEMP);
+  RANGELOW.resize(NTEMP);
+  for (FX_DWORD i = 0; i < NTEMP; ++i) {
+    PREFLEN[i] = pTable[i].PREFLEN;
+    RANGELEN[i] = pTable[i].RANDELEN;
+    RANGELOW[i] = pTable[i].RANGELOW;
+  }
+  InitCodes();
+}
+
+bool CJBig2_HuffmanTable::ParseFromCodedBuffer(CJBig2_BitStream* pStream) {
+  unsigned char cTemp;
+  if (pStream->read1Byte(&cTemp) == -1)
+    return false;
+
+  HTOOB = !!(cTemp & 0x01);
+  unsigned char HTPS = ((cTemp >> 1) & 0x07) + 1;
+  unsigned char HTRS = ((cTemp >> 4) & 0x07) + 1;
+  FX_DWORD HTLOW;
+  FX_DWORD HTHIGH;
+  if (pStream->readInteger(&HTLOW) == -1 ||
+      pStream->readInteger(&HTHIGH) == -1) {
+    return false;
+  }
+
+  const int low = static_cast<int>(HTLOW);
+  const int high = static_cast<int>(HTHIGH);
+  if (low > high)
+    return false;
+
+  ExtendBuffers(false);
+  int cur_low = low;
+  do {
+    if ((pStream->readNBits(HTPS, &PREFLEN[NTEMP]) == -1) ||
+        (pStream->readNBits(HTRS, &RANGELEN[NTEMP]) == -1)) {
+      return false;
     }
-int CJBig2_HuffmanTable::parseFromCodedBuffer(CJBig2_BitStream *pStream)
-{
-    unsigned char HTPS, HTRS;
-    int HTLOW, HTHIGH;
-    int CURRANGELOW;
-    int nSize = 16;
-    int CURLEN, LENMAX, CURCODE, CURTEMP, i;
-    int *LENCOUNT;
-    int *FIRSTCODE;
-    unsigned char cTemp;
-    if(pStream->read1Byte(&cTemp) == -1) {
-        goto failed;
+    RANGELOW[NTEMP] = cur_low;
+    cur_low += (1 << RANGELEN[NTEMP]);
+    ExtendBuffers(true);
+  } while (cur_low < high);
+
+  if (pStream->readNBits(HTPS, &PREFLEN[NTEMP]) == -1)
+    return false;
+
+  RANGELEN[NTEMP] = 32;
+  RANGELOW[NTEMP] = low - 1;
+  ExtendBuffers(true);
+
+  if (pStream->readNBits(HTPS, &PREFLEN[NTEMP]) == -1)
+    return false;
+
+  RANGELEN[NTEMP] = 32;
+  RANGELOW[NTEMP] = high;
+  ExtendBuffers(true);
+
+  if (HTOOB) {
+    if (pStream->readNBits(HTPS, &PREFLEN[NTEMP]) == -1)
+      return false;
+
+    ++NTEMP;
+  }
+
+  InitCodes();
+  return true;
+}
+
+void CJBig2_HuffmanTable::InitCodes() {
+  int lenmax = 0;
+  for (FX_DWORD i = 0; i < NTEMP; ++i)
+    lenmax = std::max(PREFLEN[i], lenmax);
+
+  CODES.resize(NTEMP);
+  std::vector<int> LENCOUNT(lenmax + 1);
+  std::vector<int> FIRSTCODE(lenmax + 1);
+  for (int len : PREFLEN)
+    ++LENCOUNT[len];
+
+  FIRSTCODE[0] = 0;
+  LENCOUNT[0] = 0;
+  for (int i = 1; i <= lenmax; ++i) {
+    FIRSTCODE[i] = (FIRSTCODE[i - 1] + LENCOUNT[i - 1]) << 1;
+    int CURCODE = FIRSTCODE[i];
+    for (FX_DWORD j = 0; j < NTEMP; ++j) {
+      if (PREFLEN[j] == i)
+        CODES[j] = CURCODE++;
     }
-    HTOOB = cTemp & 0x01;
-    HTPS  = ((cTemp >> 1) & 0x07) + 1;
-    HTRS  = ((cTemp >> 4) & 0x07) + 1;
-    if(pStream->readInteger((FX_DWORD*)&HTLOW) == -1 ||
-            pStream->readInteger((FX_DWORD*)&HTHIGH) == -1) {
-        goto failed;
-    }
-    PREFLEN  = (int*)m_pModule->JBig2_Malloc2(sizeof(int), nSize);
-    RANGELEN = (int*)m_pModule->JBig2_Malloc2(sizeof(int), nSize);
-    RANGELOW = (int*)m_pModule->JBig2_Malloc2(sizeof(int), nSize);
-    CURRANGELOW = HTLOW;
-    NTEMP = 0;
-    do {
-        HT_CHECK_MEMORY_ADJUST
-        if((pStream->readNBits(HTPS, &PREFLEN[NTEMP]) == -1)
-                || (pStream->readNBits(HTRS, &RANGELEN[NTEMP]) == -1)) {
-            goto failed;
-        }
-        RANGELOW[NTEMP] = CURRANGELOW;
-        CURRANGELOW = CURRANGELOW + (1 << RANGELEN[NTEMP]);
-        NTEMP = NTEMP + 1;
-    } while(CURRANGELOW < HTHIGH);
-    HT_CHECK_MEMORY_ADJUST
-    if(pStream->readNBits(HTPS, &PREFLEN[NTEMP]) == -1) {
-        goto failed;
-    }
-    RANGELEN[NTEMP] = 32;
-    RANGELOW[NTEMP] = HTLOW - 1;
-    NTEMP = NTEMP + 1;
-    HT_CHECK_MEMORY_ADJUST
-    if(pStream->readNBits(HTPS, &PREFLEN[NTEMP]) == -1) {
-        goto failed;
-    }
-    RANGELEN[NTEMP] = 32;
-    RANGELOW[NTEMP] = HTHIGH;
-    NTEMP = NTEMP + 1;
-    if(HTOOB) {
-        HT_CHECK_MEMORY_ADJUST
-        if(pStream->readNBits(HTPS, &PREFLEN[NTEMP]) == -1) {
-            goto failed;
-        }
-        NTEMP = NTEMP + 1;
-    }
-    CODES = (int*)m_pModule->JBig2_Malloc2(sizeof(int), NTEMP);
-    LENMAX = 0;
-    for(i = 0; i < NTEMP; i++) {
-        if(PREFLEN[i] > LENMAX) {
-            LENMAX = PREFLEN[i];
-        }
-    }
-    LENCOUNT = (int*)m_pModule->JBig2_Malloc2(sizeof(int), (LENMAX + 1));
-    JBIG2_memset(LENCOUNT, 0, sizeof(int) * (LENMAX + 1));
-    FIRSTCODE = (int*)m_pModule->JBig2_Malloc2(sizeof(int), (LENMAX + 1));
-    for(i = 0; i < NTEMP; i++) {
-        LENCOUNT[PREFLEN[i]] ++;
-    }
-    CURLEN = 1;
-    FIRSTCODE[0] = 0;
-    LENCOUNT[0]  = 0;
-    while(CURLEN <= LENMAX) {
-        FIRSTCODE[CURLEN] = (FIRSTCODE[CURLEN - 1] + LENCOUNT[CURLEN - 1]) << 1;
-        CURCODE = FIRSTCODE[CURLEN];
-        CURTEMP = 0;
-        while(CURTEMP < NTEMP) {
-            if(PREFLEN[CURTEMP] == CURLEN) {
-                CODES[CURTEMP] = CURCODE;
-                CURCODE = CURCODE + 1;
-            }
-            CURTEMP = CURTEMP + 1;
-        }
-        CURLEN = CURLEN + 1;
-    }
-    m_pModule->JBig2_Free(LENCOUNT);
-    m_pModule->JBig2_Free(FIRSTCODE);
-    return TRUE;
-failed:
-    return FALSE;
+  }
+}
+
+void CJBig2_HuffmanTable::ExtendBuffers(bool increment) {
+  if (increment)
+    ++NTEMP;
+
+  size_t size = PREFLEN.size();
+  if (NTEMP < size)
+    return;
+
+  size += 16;
+  ASSERT(NTEMP < size);
+  PREFLEN.resize(size);
+  RANGELEN.resize(size);
+  RANGELOW.resize(size);
 }
