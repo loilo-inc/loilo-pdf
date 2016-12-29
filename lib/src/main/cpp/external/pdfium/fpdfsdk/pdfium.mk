@@ -2,7 +2,8 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := libpdfium
+#LOCAL_MODULE := libpdfium
+LOCAL_MODULE := libpdfium-loilo
 
 LOCAL_ARM_MODE := arm
 LOCAL_NDK_STL_VARIANT := gnustl_static
@@ -36,7 +37,8 @@ LOCAL_STATIC_LIBRARIES := libpdfiumformfiller \
 
 
 # TODO: figure out why turning on exceptions requires manually linking libdl
-LOCAL_SHARED_LIBRARIES := libdl libft2
+#LOCAL_SHARED_LIBRARIES := libdl libft2
+LOCAL_SHARED_LIBRARIES := libft2-loilo
 
 LOCAL_SRC_FILES := \
     src/fpdf_dataavail.cpp \
