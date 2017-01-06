@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.1'
+    buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "tv.loilo.pdfiumandroid"
         minSdkVersion 19
@@ -21,11 +21,15 @@ android {
 }
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:25.0.1'
     compile project(':lib')
-    androidTestCompile ('com.android.support.test:runner:0.5'){
+    androidTestCompile('com.android.support.test:runner:0.5') {
         exclude module: 'support-annotations'
     }
+    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'com.android.support:support-v4:25.1.0'
+    compile 'tv.loilo.promise:promise:0.8.2'
+    compile 'tv.loilo.promise:promise-support:0.8.2'
+
 }
 
 repositories {

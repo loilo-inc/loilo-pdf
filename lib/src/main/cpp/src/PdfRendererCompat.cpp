@@ -73,7 +73,7 @@ static void initializeLibraryIfNeeded() {
 
     if (sLibraryReferenceCount == 0) {
         LOILOG_D("Init FPDF library");
-        FPDF_InitLibrary(NULL);
+        FPDF_InitLibrary();
     }
     sLibraryReferenceCount++;
 }
@@ -112,12 +112,12 @@ static void renderPageBitmap(FPDF_BITMAP bitmap, FPDF_PAGE page, int destLeft, i
     // and FPDF_ANNOT flags. To add support for that refer to FPDF_RenderPage_Retail
     // in fpdfview.cpp
 
-    CRenderContext *pContext = FX_NEW CRenderContext;
+    CRenderContext *pContext = new CRenderContext;
 
     CPDF_Page *pPage = (CPDF_Page *) page;
     pPage->SetPrivateData((void *) 1, pContext, dropContext);
 
-    CFX_FxgeDevice *fxgeDevice = FX_NEW CFX_FxgeDevice;
+    CFX_FxgeDevice *fxgeDevice = new CFX_FxgeDevice;
     pContext->m_pDevice = fxgeDevice;
 
     // Reverse the bytes (last argument TRUE) since the Android
@@ -127,7 +127,7 @@ static void renderPageBitmap(FPDF_BITMAP bitmap, FPDF_PAGE page, int destLeft, i
     CPDF_RenderOptions *renderOptions = pContext->m_pOptions;
 
     if (!renderOptions) {
-        renderOptions = FX_NEW CPDF_RenderOptions;
+        renderOptions = new CPDF_RenderOptions;
         pContext->m_pOptions = renderOptions;
     }
 
@@ -152,11 +152,10 @@ static void renderPageBitmap(FPDF_BITMAP bitmap, FPDF_PAGE page, int destLeft, i
     clip.bottom = destBottom;
     fxgeDevice->SetClip_Rect(&clip);
 
-    CPDF_RenderContext *pageContext = FX_NEW CPDF_RenderContext;
+    CPDF_RenderContext *pageContext = new CPDF_RenderContext(pPage);
     pContext->m_pContext = pageContext;
-    pageContext->Create(pPage);
 
-    CFX_AffineMatrix matrix;
+    CFX_Matrix matrix;
     if (!transform) {
         pPage->GetDisplayMatrix(matrix, destLeft, destTop, destRight - destLeft,
                                 destBottom - destTop, 0);
@@ -171,8 +170,8 @@ static void renderPageBitmap(FPDF_BITMAP bitmap, FPDF_PAGE page, int destLeft, i
     }
     pageContext->AppendObjectList(pPage, &matrix);
 
-    pContext->m_pRenderer = FX_NEW CPDF_ProgressiveRenderer;
-    pContext->m_pRenderer->Start(pageContext, fxgeDevice, renderOptions, NULL);
+    pContext->m_pRenderer = new CPDF_ProgressiveRenderer(pageContext, fxgeDevice, renderOptions);
+    pContext->m_pRenderer->Start(NULL);
 
     fxgeDevice->RestoreState();
 

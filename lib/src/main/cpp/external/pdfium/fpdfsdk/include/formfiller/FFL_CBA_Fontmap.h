@@ -1,51 +1,46 @@
 // Copyright 2014 PDFium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
- 
+
 // Original code copyright 2014 Foxit Software Inc. http://www.foxitsoftware.com
 
-#ifndef _RAO_FONTMAP_H_
-#define _RAO_FONTMAP_H_
+#ifndef FPDFSDK_INCLUDE_FORMFILLER_FFL_CBA_FONTMAP_H_
+#define FPDFSDK_INCLUDE_FORMFILLER_FFL_CBA_FONTMAP_H_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include "fpdfsdk/include/pdfwindow/PWL_FontMap.h"
 
+class CPDF_Dictionary;
 class CPDFSDK_Annot;
 
-class CBA_FontMap : public CPWL_FontMap
-{
-public:
-	CBA_FontMap(CPDFSDK_Annot* pAnnot, IFX_SystemHandler* pSystemHandler);
-	CBA_FontMap(CPDF_Document* pDocument, CPDF_Dictionary* pAnnotDict, IFX_SystemHandler* pSystemHandler);
+class CBA_FontMap : public CPWL_FontMap {
+ public:
+  CBA_FontMap(CPDFSDK_Annot* pAnnot, IFX_SystemHandler* pSystemHandler);
+  ~CBA_FontMap() override;
 
-	virtual ~CBA_FontMap();
+  void SetDefaultFont(CPDF_Font* pFont, const CFX_ByteString& sFontName);
 
-	virtual void				Initial(FX_LPCSTR fontname = NULL);
+  void Reset();
+  void SetAPType(const CFX_ByteString& sAPType);
 
-public:
-	void						SetDefaultFont(CPDF_Font * pFont, const CFX_ByteString & sFontName);
+ private:
+  // CPWL_FontMap:
+  void Initialize() override;
+  CPDF_Document* GetDocument() override;
+  CPDF_Font* FindFontSameCharset(CFX_ByteString& sFontAlias,
+                                 int32_t nCharset) override;
+  void AddedFont(CPDF_Font* pFont, const CFX_ByteString& sFontAlias) override;
 
-	void						Reset();
-	void						SetAPType(const CFX_ByteString& sAPType);
+  CPDF_Font* FindResFontSameCharset(CPDF_Dictionary* pResDict,
+                                    CFX_ByteString& sFontAlias,
+                                    int32_t nCharset);
+  CPDF_Font* GetAnnotDefaultFont(CFX_ByteString& csNameTag);
+  void AddFontToAnnotDict(CPDF_Font* pFont, const CFX_ByteString& sAlias);
 
-protected:
-	virtual CPDF_Font*			FindFontSameCharset(CFX_ByteString& sFontAlias, FX_INT32 nCharset);
-	virtual void				AddedFont(CPDF_Font* pFont, const CFX_ByteString& sFontAlias);
-	virtual CPDF_Document*		GetDocument();
-private:
-	CPDF_Font*					FindResFontSameCharset(CPDF_Dictionary* pResDict, CFX_ByteString& sFontAlias,
-									FX_INT32 nCharset);
-	CPDF_Font*					GetAnnotDefaultFont(CFX_ByteString &csNameTag);
-	void						AddFontToAnnotDict(CPDF_Font* pFont, const CFX_ByteString& sAlias);
-
-private:
-	CPDF_Document*				m_pDocument;
-	CPDF_Dictionary*			m_pAnnotDict;
-	CPDF_Font*					m_pDefaultFont;
-	CFX_ByteString				m_sDefaultFontName;
-	
-	CFX_ByteString				m_sAPType;
+  CPDF_Document* m_pDocument;
+  CPDF_Dictionary* m_pAnnotDict;
+  CPDF_Font* m_pDefaultFont;
+  CFX_ByteString m_sDefaultFontName;
+  CFX_ByteString m_sAPType;
 };
 
-#endif // _RAO_FONTMAP_H_
+#endif  // FPDFSDK_INCLUDE_FORMFILLER_FFL_CBA_FONTMAP_H_
