@@ -45,7 +45,7 @@ dependencies {
 
 ## Original Pdfium Library
 
-This library is forked from original pdfium library in AOSP, version of 5.0.0-r1.
+This library is forked from original pdfium library in AOSP, version of refs/tags/android-7.1.1_r6.
 
 ## LICENSE
 
