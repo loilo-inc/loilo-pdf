@@ -659,6 +659,7 @@ LOCAL_SRC_FILES := \
 	third_party/etc1/etc1.cpp \
 	third_party/ktx/ktx.cpp
 
+#use ndk-bundle's shared lib if possible
 LOCAL_SHARED_LIBRARIES := \
 	liblog \
 	libGLESv2 \
@@ -673,6 +674,7 @@ LOCAL_SHARED_LIBRARIES := \
 	libdng_sdk \
 	libpiex
 
+#move to SHARED_LIBRARIES
 LOCAL_STATIC_LIBRARIES := \
 	libgif \
 	libwebp-decode \

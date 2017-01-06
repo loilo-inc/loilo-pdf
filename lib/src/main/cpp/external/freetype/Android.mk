@@ -47,7 +47,8 @@ LOCAL_CFLAGS += -fPIC -DPIC
 LOCAL_CFLAGS += "-DDARWIN_NO_CARBON"
 LOCAL_CFLAGS += "-DFT2_BUILD_LIBRARY"
 
-LOCAL_SHARED_LIBRARIES += libpng libz
+#LOCAL_SHARED_LIBRARIES += libpng libz
+LOCAL_SHARED_LIBRARIES += libpng-loilo libz-loilo
 
 # the following is for testing only, and should not be used in final builds
 # of the product
@@ -55,7 +56,8 @@ LOCAL_SHARED_LIBRARIES += libpng libz
 
 LOCAL_CFLAGS += -O2
 
-LOCAL_MODULE:= libft2
+#LOCAL_MODULE:= libft2
+LOCAL_MODULE:= libft2-loilo
 
 include $(BUILD_SHARED_LIBRARY)
 endif
