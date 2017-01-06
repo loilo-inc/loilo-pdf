@@ -9,7 +9,7 @@ LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 GYP_CONFIGURATION := Release
 
 LOCAL_MODULE_CLASS := STATIC_LIBRARIES
-LOCAL_MODULE := libsfntly
+LOCAL_MODULE := libsfntly-loilo
 LOCAL_MODULE_SUFFIX := .a
 LOCAL_MODULE_TAGS := optional
 
@@ -83,7 +83,7 @@ MY_CFLAGS_Debug := \
 	-fvisibility=hidden \
 	-pipe \
 	-fPIC \
-	-fno-tree-sra \
+#	-fno-tree-sra \
 	-Wno-psabi \
 	-ffunction-sections \
 	-funwind-tables \
@@ -161,7 +161,7 @@ MY_CFLAGS_Release := \
 	-fvisibility=hidden \
 	-pipe \
 	-fPIC \
-	-fno-tree-sra \
+#	-fno-tree-sra \
 	-Wno-psabi \
 	-ffunction-sections \
 	-funwind-tables \
@@ -233,4 +233,5 @@ LOCAL_CFLAGS := $(MY_CFLAGS_$(GYP_CONFIGURATION)) $(MY_DEFS_$(GYP_CONFIGURATION)
 LOCAL_C_INCLUDES := $(LOCAL_C_INCLUDES_$(GYP_CONFIGURATION))
 LOCAL_CPPFLAGS := $(LOCAL_CPPFLAGS_$(GYP_CONFIGURATION))
 
-include $(BUILD_STATIC_LIBRARY)
+#include $(BUILD_STATIC_LIBRARY)
+include $(BUILD_SHARED_LIBRARY)

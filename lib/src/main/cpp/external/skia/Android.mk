@@ -849,10 +849,10 @@ include $(BUILD_SHARED_LIBRARY)
 #
 
 # benchmark (timings)
-include $(BASE_PATH)/bench/Android.mk
+# include $(BASE_PATH)/bench/Android.mk
 
 #disable build in PDK
-ifneq ($(TARGET_BUILD_PDK),true)
+#ifneq ($(TARGET_BUILD_PDK),true)
 # diamond-master (one test to rule them all)
-include $(BASE_PATH)/dm/Android.mk
-endif
+#include $(BASE_PATH)/dm/Android.mk
+#endif
