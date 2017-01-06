@@ -84,11 +84,12 @@ LOCAL_C_INCLUDES += \
         $(LOCAL_PATH)/enc \
         $(LOCAL_PATH)/../include
 
-LOCAL_MODULE := libwebp-encode
+LOCAL_MODULE := libwebp-encode-loilo
 
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 
-include $(BUILD_STATIC_LIBRARY)
+#include $(BUILD_STATIC_LIBRARY)
+include $(BUILD_SHARED_LIBRARY)
 
 ###############################################
 
@@ -157,8 +158,9 @@ LOCAL_C_INCLUDES += \
 
 LOCAL_SDK_VERSION := 9
 
-LOCAL_MODULE := libwebp-decode
+LOCAL_MODULE := libwebp-decode-loilo
 
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 
-include $(BUILD_STATIC_LIBRARY)
+#include $(BUILD_STATIC_LIBRARY)
+include $(BUILD_SHARED_LIBRARY)

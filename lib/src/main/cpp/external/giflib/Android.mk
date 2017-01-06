@@ -12,6 +12,7 @@ LOCAL_SRC_FILES := \
     quantize.c
 
 LOCAL_CFLAGS += -Wno-format -Wno-sign-compare -Wno-unused-parameter -DHAVE_CONFIG_H
-LOCAL_MODULE:= libgif
+LOCAL_MODULE:= libgif-loilo
 
-include $(BUILD_STATIC_LIBRARY)
+#include $(BUILD_STATIC_LIBRARY)
+include $(BUILD_SHARED_LIBRARY)

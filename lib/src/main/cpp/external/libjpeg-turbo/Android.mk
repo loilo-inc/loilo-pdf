@@ -70,6 +70,7 @@ LOCAL_CFLAGS += -O3 -fstrict-aliasing
 LOCAL_CFLAGS += -Wno-unused-parameter
 LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)
 
+###
 ifneq (,$(TARGET_BUILD_APPS))
   # Unbundled branch, built against NDK.
   LOCAL_SDK_VERSION := 17
@@ -78,6 +79,7 @@ endif
 # Build as a static library.
 LOCAL_MODULE := libjpeg_static
 include $(BUILD_STATIC_LIBRARY)
+###
 
 # Also build as a shared library.
 include $(CLEAR_VARS)
@@ -88,6 +90,7 @@ ifneq (,$(TARGET_BUILD_APPS))
 endif
 
 LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)
-LOCAL_WHOLE_STATIC_LIBRARIES = libjpeg_static
-LOCAL_MODULE := libjpeg
+#LOCAL_WHOLE_STATIC_LIBRARIES = libjpeg_static
+#LOCAL_MODULE := libjpeg
+LOCAL_MODULE := libjpeg-loilo
 include $(BUILD_SHARED_LIBRARY)
