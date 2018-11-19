@@ -24,19 +24,18 @@ common_SRC_FILES := \
 
 common_CFLAGS := -std=gnu89 -Wno-unused-parameter #-fvisibility=hidden ## -fomit-frame-pointer
 
-ifeq ($(TARGET_ARCH_ABI),$(filter $(TARGET_ARCH_ABI),armeabi armeabi-v7a arm64-v8a))
+common_ARM_NEON := false
+
+ifeq ($(TARGET_ARCH_ABI),$(filter $(TARGET_ARCH_ABI),armeabi-v7a arm64-v8a))
 
 common_SRC_FILES += \
     arm/arm_init.c \
     arm/filter_neon.S \
     arm/filter_neon_intrinsics.c
 
-endif
-
-
-ifeq ($(TARGET_ARCH_ABI),$(filter $(TARGET_ARCH_ABI),armeabi-v7a arm64-v8a))
-
 common_CFLAGS += -DPNG_ARM_NEON_OPT=2
+
+common_ARM_NEON := true
 
 endif
 
@@ -130,6 +129,7 @@ endif
 
 include $(CLEAR_VARS)
 LOCAL_CLANG := true
+LOCAL_ARM_NEON := $(common_ARM_NEON)
 LOCAL_SRC_FILES := $(common_SRC_FILES)
 #LOCAL_SRC_FILES_arm := $(my_src_files_arm)
 #LOCAL_SRC_FILES_arm64 := $(my_src_files_arm)

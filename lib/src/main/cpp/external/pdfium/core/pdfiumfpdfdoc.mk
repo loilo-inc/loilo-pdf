@@ -5,7 +5,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE:= libpdfiumfpdfdoc
 
 LOCAL_ARM_MODE := arm
-LOCAL_NDK_STL_VARIANT := gnustl_static
+LOCAL_NDK_STL_VARIANT := c++_static
 
 LOCAL_CFLAGS += -O3 -fstrict-aliasing -fprefetch-loop-arrays -fexceptions
 LOCAL_CFLAGS += -Wno-non-virtual-dtor -Wall -DOPJ_STATIC \

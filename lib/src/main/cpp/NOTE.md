@@ -115,5 +115,6 @@
   * Application.mkは使えないみたいなので、ndk-buildのパラメータで全部指定する。
 
     ```
-    ndk-build -B NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./Android.mk APP_OPTIM=release APP_PLATFORM=android-19 APP_STL=gnustl_static APP_CPPFLAGS="-std=c++11" APP_ABI="armeabi armeabi-v7a arm64-v8a x86 x86_64"
+    export PATH="$HOME/Library/Android/sdk/ndk-bundle:$PATH"
+    ndk-build -B NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./Android.mk APP_OPTIM=release APP_PLATFORM=android-19 APP_STL=c++_static APP_CPPFLAGS="-std=c++11" APP_ABI="armeabi-v7a arm64-v8a x86 x86_64"
     ```
