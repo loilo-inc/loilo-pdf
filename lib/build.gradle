@@ -11,6 +11,7 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++14 -frtti -fexceptions"
+                arguments "-DANDROID_PLATFORM=android-19", "-DANDROID_TOOLCHAIN=clang", "-DANDROID_STL=c++_static", "-DANDROID_CPP_FEATURES=rtti exceptions", "-DANDROID_ARM_MODE=arm", "-DANDROID_PIE=ON", "-DANDROID_DISABLE_FORMAT_STRING_CHECKS=TRUE"
             }
         }
     }
